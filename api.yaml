@@ -19,11 +19,13 @@ security:
 tags: 
   - name: hero
     description: Administration de la section Hero
+  - name: promotional_banner
+    description: Administration de la bannière promotionnelle
   - name: video_section
     description: Administration de la section Vidéo
-  - name: rooms
+  - name: room_categories
     description: Administration de la section Chambres
-  - name: avantages
+  - name: advantages
     description: Administration de la section Avantages
   - name: reviews
     description: Administration de la section Avis
@@ -57,7 +59,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HeroList'
+              $ref: '#/components/schemas/Hero'
       responses:
         '200':
           description: 'Le hero a bien été créé'
@@ -85,7 +87,40 @@ paths:
         '404':
           description: 'Ressource non trouvée.'  
             
-            
+  /promotional_banner:
+    get:
+    tags:
+      - promotional_banner
+      operationId: getPromotionalBanner
+      summary: Renvoie les propriétés de la banière promotionnelle.
+      description: Cette méthode ne prend aucun paramètre et permet de consulter les champs de la bannière promotionnelle.
+      responses:
+        '200':
+          description: Champs de la bannière promotionnelle.
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionalBanner'
+    put:
+      tags:
+        - promotional_banner
+      operationId: updatePromotionalBanner
+      summary: Met à jour la bannière promotionnelle.
+      description: Cette méthode permet de modifier la bannière promotionnelle.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionalBanner'
+      responses:
+        '200':
+          description: Bannière mise à jour avec succès.
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionalBanner'
+
   /home/video_section:
     get:
       tags:
@@ -99,9 +134,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/VideoSectionList'  
+                $ref: '#/components/schemas/VideoSectionList'  
   
     post:
         tags:
@@ -112,7 +145,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VideoSectionList'
+                $ref: '#/components/schemas/VideoSection'
         responses:
           '200':
             description: 'La section vidéo a bien été créé'
@@ -144,23 +177,31 @@ paths:
     get:
       tags:
         - rooms
-      summary: Récupération des éléments de la section Rooms
+      summary: Récupération des éléments de la section Room Categories
       description: >-
-        Liste des éléments de la section Rooms
+        Liste des éléments de la section Room Categories
       responses:
         '200':
-          description: Elements de la section Rooms affichés
+          description: Elements de la section Room Categories affichés
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RoomsList'
-    
-    post:
+                  $ref: '#/components/schemas/RoomCategories'
+  /home/rooms/{id}:  
+    put:
       tags:
         - rooms
-      summary: Création d'une nouvelle section Rooms
+      summary: Modification d'une nouvelle section Rooms
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID de la catégorie à modifier
+          schema:
+            type: integer
+            example: 10
       requestBody:
         required: true
         content:
@@ -169,26 +210,50 @@ paths:
               $ref: '#/components/schemas/RoomsList'
       responses:
         '200':
-          description: 'Le hero a bien été créé'
+          description: 'La catégorie a bien été modifiée'
         '400':
           description: 'La syntaxe de la requête est erronée.'
-  /home/hero/{id}:
+        '404':
+          description: 'Ressource non trouvée.' 
+
+  /home/advantages:
+    get:
+      tags: 
+        - advantages
+      operationId: getAllAdvantages
+      summary: Récupère les avantages.
+      description: Cette section retourne tous les avantages mis en avant par l'hôtel.
+      responses:
+        '200':
+          description: Renvoie tous les avantages.
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advantages'
+  /home/advantages/{id}:
     put:
       tags:
-        - hero
-      summary: Modification d'un hero
-      description: Modification d'un hero spécifique
+        - advantages
+      operationId: updateAdvantage
+      summary: Modifie l'un des avantages.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
       parameters:
         - in: path
           name: id
           required: true
-          description: ID du hero à modifier
+          description: Id de l'avantage à modifier
           schema:
             type: integer
-            example: 10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Advantages'
       responses:
         '200':
-          description: 'Le hero a bien été créé'
+          description: 'Avantage mis à jour.'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
@@ -196,7 +261,7 @@ paths:
   
 components:
   schemas: 
-    HeroList:
+    Hero:
       description: Modèle contenant les éléments du hero
       type: object
       required:
@@ -217,9 +282,9 @@ components:
         subtitle:
           type: string
           example: Le sous titre de ma page
-        media_id:
-          type: integer
-          example: 3
+        media_url:
+          type: string
+          example: path/to/the/file
         title_english:
           type: string
           example: The Title
@@ -227,8 +292,26 @@ components:
           type: string
           example: The subtitle of may page
         
-          
-    VideoSectionList:
+    PromotionalBanner:
+      description: Modèle contenant les éléments de la bannière promotionnelle.
+      type: object
+      required:
+        - id
+        - text_french
+        - text_english
+
+      properties:
+        id:
+          type: integer
+          example: 0
+        text_french:
+          type: string
+          example: "Mon texte français"
+        text_english:
+          type: string
+          example: "My english text"
+
+    VideoSection:
       description: Modèle contenant les éléments de la section Vidéo
       type: object
       required:
@@ -260,7 +343,70 @@ components:
           type: string
           example: The description in english
         
-          
+    Advantages:
+      description: Modèle contenant les éléments de la section Avantages 
+      type: object
+      required:
+        - icon_url
+        - title_french
+        - title_english
+        - description_french
+        - description_english
+
+      properties:
+        id:
+          type: integer
+          example: 3
+        icon_url:
+          type: string
+          example: 'https://fonts.googleapis.com/icon?family=Material+Icons'
+        title_french: 
+          type: string
+          example: "Mon titre en français"
+        title_english:
+          type: string
+          example: "My english title"
+        description_french:
+          type: string
+          example: "Description de mon avantage"
+        description_english:
+          type: string
+          example: "Description of my advantage"
+      
+      Reviews:
+      description: Modèle contenant les éléments d'un avis.
+      type: object
+      required:
+          - id
+          - customer_id
+          - rating
+          - body
+          - is_displayed
+          - created_at
+
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 12
+        customer_id:
+          type: integer
+          format: int64
+          example: 14
+        rating:
+          type: number
+          format: float
+          example: 3.5
+        body:
+          type: string
+          example: "Voilà mon avis"
+        is_displayed:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: timestamp
+
   securitySchemes:
     password:
       type: oauth2
