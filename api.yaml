@@ -47,7 +47,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HeroList'
+                  $ref: '#/components/schemas/Hero'
 
   /home/hero/{id}:
     put:
@@ -122,7 +122,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VideoSectionList'
+                $ref: '#/components/schemas/VideoSection'
     put:
         tags:
           - video_section
@@ -537,7 +537,32 @@ components:
         description_english:
           type: string
           example: The description in english
-        
+
+    RoomCategories:
+      description: Propriétés des catégories de chambres dans la base de donnée, avec l'url de leur image.
+      required:
+        - url
+        - title_french
+        - title_english
+        - description_french
+        - description_english
+      type: object
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+        title_french:
+          type: string
+        title_english:
+          type: string
+          format: date
+        description_french:
+          type: string
+          format: date
+        description_english:
+          type: string
+
     Advantages:
       description: Modèle contenant les éléments de la section Avantages 
       type: object
