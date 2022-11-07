@@ -11,11 +11,7 @@ info:
     # Un commentaire
     name: Team name 
     email: you@your-company.com
-  
-security:
-  - password:
-      - read
-      - write
+
 tags: 
   - name: hero
     description: Administration de la section Hero
@@ -308,7 +304,7 @@ paths:
       summary: Permet de créer une toute nouvelle actualité.
       description: Cette méthode permet de créer une nouvelle actualité en passant tous les champs du modèle actualité.
       requestBody:
-        request: true
+        required: true
         content:
           application/json:
             schema:
@@ -684,8 +680,6 @@ components:
         social_url:
           type: string
           example: 'https://www.facebook.com/hotelarth'
-
-    Admin:
 
   securitySchemes:
     password:
