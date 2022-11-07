@@ -33,6 +33,9 @@ tags:
     description: Administration de la section Actualités
   - name: footer
     description: Administration du footer
+  - name: social_media
+    description: Administration des réseaux sociaux
+
 paths:
   /home/hero:
     get:
@@ -49,22 +52,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/HeroList'
-    
-    post:
-      tags:
-        - hero
-      summary: Création d'un nouvel hero
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Hero'
-      responses:
-        '200':
-          description: 'Le hero a bien été créé'
-        '400':
-          description: 'La syntaxe de la requête est erronée.'
+
   /home/hero/{id}:
     put:
       tags:
@@ -81,7 +69,7 @@ paths:
             example: 10
       responses:
         '200':
-          description: 'Le hero a bien été créé'
+          description: 'Le hero a bien été modifiée'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
@@ -89,15 +77,15 @@ paths:
             
   /promotional_banner:
     get:
-    tags:
-      - promotional_banner
+      tags:
+        - promotional_banner
       operationId: getPromotionalBanner
       summary: Renvoie les propriétés de la banière promotionnelle.
       description: Cette méthode ne prend aucun paramètre et permet de consulter les champs de la bannière promotionnelle.
       responses:
         '200':
           description: Champs de la bannière promotionnelle.
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
@@ -120,6 +108,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
 
   /home/video_section:
     get:
@@ -134,9 +126,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VideoSectionList'  
-  
-    post:
+                $ref: '#/components/schemas/VideoSectionList'
+    put:
         tags:
           - video_section
         summary: Création d'une nouvelle section Vidéo
@@ -148,31 +139,16 @@ paths:
                 $ref: '#/components/schemas/VideoSection'
         responses:
           '200':
-            description: 'La section vidéo a bien été créé'
+            description: 'La section vidéo a bien été modifiée.'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/VideoSection'
           '400':
             description: 'La syntaxe de la requête est erronée.'
-  /home/video_section/{id}:
-    put:
-      tags:
-        - video_section
-      summary: Modification d'une section vidéo
-      description: Modification d'une section vidéo spécifique
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: ID de la section vidéo à modifier
-          schema:
-            type: integer
-            example: 3
-      responses:
-        '200':
-          description: 'Le hero a bien été créé'
-        '400':
-          description: 'La syntaxe de la requête est erronée.'
-        '404':
-          description: 'Ressource non trouvée.' 
-  
+          '404':
+            description: 'Ressource non trouvée.'
+
   /home/rooms:
     get:
       tags:
@@ -189,7 +165,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RoomCategories'
-  /home/rooms/{id}:  
+
+  /home/room_category/{id}:
     put:
       tags:
         - rooms
@@ -207,10 +184,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RoomsList'
+              $ref: '#/components/schemas/RoomCategories'
       responses:
         '200':
           description: 'La catégorie a bien été modifiée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomCategories'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
@@ -237,7 +218,8 @@ paths:
       operationId: updateAdvantage
       summary: Modifie l'un des avantages.
       description: >-
-        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
       parameters:
         - in: path
           name: id
@@ -254,11 +236,228 @@ paths:
       responses:
         '200':
           description: 'Avantage mis à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advantages'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
-          description: 'Ressource non trouvée.'  
-  
+          description: 'Ressource non trouvée.'
+
+  /home/reviews:
+    get:
+      tags:
+        - reviews
+      operationId: getReviews
+      summary: Récupère les avis des visiteurs de l'hôtel.
+      description: Cette section retourne tous les avis.
+      responses:
+        '200':
+          description: Avis renvoyés avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reviews'
+
+  /home/reviews/{id}:
+    put:
+      tags:
+        - reviews
+      operationId: modifyReviews
+      summary: Permet de modifier le champ isDisplayed. L'avis sera affiché si isDisplayed a pour valeur `true`.
+      description: Cette section permet de modifier la valeur isDisplayed d'un avis en true ou false.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID de l'avis à modifier
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Avis modifié avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reviews'
+        '400':
+          description: 'Erreur dans la requête.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/news:
+    get:
+      tags:
+        - news
+      operationId: getAllNews
+      summary: Permet de récupérer les éléments de toutes les actualités.
+      description: Cette section retourne toutes les actualités de l'hôtel.
+      responses:
+        '200':
+          description: Actualités renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+    post:
+      tags:
+        - news
+      operationId: postNews
+      summary: Permet de créer une toute nouvelle actualité.
+      description: Cette méthode permet de créer une nouvelle actualité en passant tous les champs du modèle actualité.
+      requestBody:
+        request: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/News'
+      responses:
+        '200':
+          description: 'Actualité créée.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        '400':
+          description: 'Erreur dans la requête.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/news/{id}:
+    put:
+      tags:
+        - news
+      operationId: updateNews
+      summary: Modifie une actualité.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de l'avantage à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/News'
+      responses:
+        '200':
+          description: 'Actualité mise à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+
+  /home/footer:
+    get:
+      tags:
+        - footer
+      operationId: getAllFooter
+      summary: Permet de récupérer tous les éléments du footer, hormis les réseaux sociaux.
+      description: Cette section retourne toutes les entrées du footer sauf les réseaux sociaux.
+      responses:
+        '200':
+          description: Footer renvoyé avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+
+  /home/footer/{id}:
+    put:
+      tags:
+        - footer
+      operationId: updateFooter
+      summary: Modifie une entrée du footer.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de l'avantage à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Footer'
+      responses:
+        '200':
+          description: 'Entrée du footer mise à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/social_media:
+    get:
+      tags:
+        - social_media
+      operationId: getAllSocialMedia
+      summary: Permet de récupérer tous les éléments des réseaux sociaux.
+      description: Cette section retourne toutes les entrées des réseaux sociaux.
+      responses:
+        '200':
+          description: Réseau sociaux renvoyés avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialMedia'
+
+  /home/social_medias/{id}:
+    put:
+      tags:
+        - social_media
+      operationId: updateSocialMedia
+      summary: Modifie une entrée d'un élément des réseaux sociaux..
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de l'avantage à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SocialMedia'
+      responses:
+        '200':
+          description: 'Réseau social mis à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
 components:
   schemas: 
     Hero:
@@ -373,7 +572,7 @@ components:
           type: string
           example: "Description of my advantage"
       
-      Reviews:
+    Reviews:
       description: Modèle contenant les éléments d'un avis.
       type: object
       required:
@@ -406,6 +605,87 @@ components:
         created_at:
           type: string
           format: timestamp
+
+    News:
+      description: Modèle contenant les éléments de la section Actualités
+      type: object
+      required:
+        - url
+        - title_french
+        - title_english
+        - description_french
+        - description_english
+        - created_at
+
+      properties:
+        id:
+          type: integer
+          example: 3
+        url:
+          type: string
+          example: 'https://hotelarth.fr/news/98'
+        title_french:
+          type: string
+          example: "Mon titre en français"
+        title_english:
+          type: string
+          example: "My english title"
+        description_french:
+          type: string
+          example: "Description de mon avantage"
+        description_english:
+          type: string
+          example: "Description of my advantage"
+        created_at:
+          type: string
+          format: date-time
+
+    Footer:
+      description: Contient les liens qui forment les entrées du footer.
+      type: object
+      required:
+        - id
+        - column
+        - entry_name
+        - url_redirection
+
+      properties:
+        id:
+          type: integer
+          example: 1
+        column:
+          type: integer
+          enum:
+            - 0
+            - 1
+            - 2
+        entry_name:
+          type: string
+          example: 'Ceci est une chaîne de caractère'
+        url_redirection:
+          type: string
+          example: 'http://www.url.com/example'
+
+    SocialMedia:
+      description: Icônes et liens des réseaux sociaux.
+      type: object
+      required:
+        - id
+        - logo_svg
+        - social_url
+
+      properties:
+        id:
+          type: integer
+          example: 1
+        logo_svg:
+          type: string
+          example: 'path/to/svg'
+        social_url:
+          type: string
+          example: 'https://www.facebook.com/hotelarth'
+
+    Admin:
 
   securitySchemes:
     password:
