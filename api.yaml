@@ -17,7 +17,7 @@ tags:
     description: Administration de la section Hero
   - name: promotional_banner
     description: Administration de la bannière promotionnelle
-  - name: video_section
+  - name: presentation_video
     description: Administration de la section Vidéo
   - name: room_categories
     description: Administration de la section Chambres
@@ -63,15 +63,25 @@ paths:
           schema:
             type: integer
             example: 10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hero'
       responses:
         '200':
-          description: 'Le hero a bien été modifiée'
+          description: 'Le hero a bien été modifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hero'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
-          description: 'Ressource non trouvée.'  
-            
-  /promotional_banner:
+          description: 'Ressource non trouvée.'
+
+  /home/promotional_banner:
     get:
       tags:
         - promotional_banner
@@ -85,8 +95,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
-
-  /promotional_banner/{id}:
+  /home/promotional_banner/{id}:
     put:
       tags:
         - promotional_banner
@@ -94,13 +103,13 @@ paths:
       summary: Met à jour la bannière promotionnelle.
       description: Cette méthode permet de modifier la bannière promotionnelle.
       parameters:
-         - in: path
-           name: id
-           required: true
-           description: ID de la bannière à modifier
-           schema:
-             type: integer
-             example: 10
+        - in: path
+          name: id
+          required: true
+          description: ID de la bannière à modifier
+          schema:
+            type: integer
+            example: 10
       requestBody:
         required: true
         content:
@@ -110,7 +119,7 @@ paths:
       responses:
         '200':
           description: Bannière mise à jour avec succès.
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
@@ -119,10 +128,10 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/video_section:
+  /home/presentation_video:
     get:
       tags:
-        - video_section
+        - presentation_video
       summary: Récupération des éléments de la section vidéo
       description: >-
         Liste des sections vidéo
@@ -132,43 +141,35 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VideoSection'
-
-  /home/video_section/{id}:
+                $ref: '#/components/schemas/PresentationVideo'
+                
+  /home/presentation_video/{id}:
     post:
-        tags:
-          - video_section
-        summary: Création d'une nouvelle section Vidéo
-        parameters:
-          - in: path
-            name: id
-            required: true
-            description: ID de la section vidéo à modifier
+      tags:
+        - presentation_video
+      summary: Création d'une nouvelle section Vidéo
+      requestBody:
+        required: true
+        content:
+          application/json:
             schema:
-              type: integer
-              example: 10
-        requestBody:
-          required: true
+              $ref: '#/components/schemas/PresentationVideo'
+      responses:
+        '200':
+          description: 'La section vidéo a bien été modifiée.'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VideoSection'
-        responses:
-          '200':
-            description: 'La section vidéo a bien été modifiée.'
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/VideoSection'
-          '400':
-            description: 'La syntaxe de la requête est erronée.'
-          '404':
-            description: 'Ressource non trouvée.'
+                $ref: '#/components/schemas/PresentationVideo'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
 
   /home/room_category:
     get:
       tags:
-        - rooms
+        - room_category
       summary: Récupération des éléments de la section Room Categories
       description: >-
         Liste des éléments de la section Room Categories
@@ -183,10 +184,10 @@ paths:
                   $ref: '#/components/schemas/RoomCategories'
 
   /home/room_category/{id}:
-    put:
+    post:
       tags:
-        - rooms
-      summary: Modification d'une nouvelle section Rooms
+        - room_category
+      summary: Modification d'une nouvelle section room_category
       parameters:
         - in: path
           name: id
@@ -211,11 +212,11 @@ paths:
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
-          description: 'Ressource non trouvée.' 
+          description: 'Ressource non trouvée.'
 
   /home/advantages:
     get:
-      tags: 
+      tags:
         - advantages
       operationId: getAllAdvantages
       summary: Récupère les avantages.
@@ -223,10 +224,11 @@ paths:
       responses:
         '200':
           description: Renvoie tous les avantages.
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Advantages'
+
   /home/advantages/{id}:
     post:
       tags:
@@ -303,6 +305,32 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
+    post:
+      tags:
+        - reviews
+      operationId: createReview
+      summary: Permet de créer une nouvelle Review
+      description: >-
+        Cette méthode crée une nouvelle Review.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Advantages'
+      responses:
+        '200':
+          description: 'Avantage mis à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reviews'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
   /home/news:
     get:
       tags:
@@ -317,12 +345,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/News'
+
+  /home/news/{id}:
     post:
       tags:
         - news
       operationId: postNews
       summary: Permet de créer une toute nouvelle actualité.
       description: Cette méthode permet de créer une nouvelle actualité en passant tous les champs du modèle actualité.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de la news à modifier
+          schema:
+            type: integer
       requestBody:
         required: true
         content:
@@ -339,10 +376,10 @@ paths:
         '400':
           description: 'Erreur dans la requête.'
         '404':
-          description: 'Ressource non trouvée'
+          description: 'Ressource non trouvée.'
 
   /home/news/{id}:
-    post:
+    put:
       tags:
         - news
       operationId: updateNews
@@ -354,7 +391,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: Id de l'avantage à modifier
+          description: Id de la news à modifier
           schema:
             type: integer
       requestBody:
@@ -391,41 +428,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/Footer'
 
-  /home/footer/{id}:
-    put:
-      tags:
-        - footer
-      operationId: updateFooter
-      summary: Modifie une entrée du footer.
-      description: >-
-        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
-        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id de l'avantage à modifier
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Footer'
-      responses:
-        '200':
-          description: 'Entrée du footer mise à jour.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Footer'
-        '400':
-          description: 'La syntaxe de la requête est erronée.'
-        '404':
-          description: 'Ressource non trouvée.'
+#  /home/footer/{id}:
+#    put:
+#      tags:
+#        - footer
+#      operationId: updateFooter
+#      summary: Modifie une entrée du footer.
+#      description: >-
+#        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID.
+#        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+#      parameters:
+#        - in: path
+#          name: id
+#          required: true
+#          description: Id de l'avantage à modifier
+#          schema:
+#            type: integer
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/Footer'
+#      responses:
+#        '200':
+#          description: 'Entrée du footer mise à jour.'
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Footer'
+#        '400':
+#          description: 'La syntaxe de la requête est erronée.'
+#        '404':
+#          description: 'Ressource non trouvée.'
 
-  /home/social_media:
+  /home/social_medias:
     get:
       tags:
         - social_media
@@ -440,39 +477,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/SocialMedia'
 
-  /home/social_medias/{id}:
-    put:
-      tags:
-        - social_media
-      operationId: updateSocialMedia
-      summary: Modifie une entrée d'un élément des réseaux sociaux..
-      description: >-
-        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
-        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id de l'avantage à modifier
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SocialMedia'
-      responses:
-        '200':
-          description: 'Réseau social mis à jour.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Footer'
-        '400':
-          description: 'La syntaxe de la requête est erronée.'
-        '404':
-          description: 'Ressource non trouvée.'
+#  /home/social_medias/{id}:
+#    put:
+#      tags:
+#        - social_media
+#      operationId: updateSocialMedia
+#      summary: Modifie une entrée d'un élément des réseaux sociaux..
+#      description: >-
+#        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID.
+#        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+#      parameters:
+#        - in: path
+#          name: id
+#          required: true
+#          description: Id de l'avantage à modifier
+#          schema:
+#            type: integer
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/SocialMedia'
+#      responses:
+#        '200':
+#          description: 'Réseau social mis à jour.'
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Footer'
+#        '400':
+#          description: 'La syntaxe de la requête est erronée.'
+#        '404':
+#          description: 'Ressource non trouvée.'
 
 components:
   schemas: 
@@ -515,7 +552,7 @@ components:
           type: string
           example: "My english text"
 
-    VideoSection:
+    PresentationVideo:
       description: Modèle contenant les éléments de la section Vidéo
       type: object
        
