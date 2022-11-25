@@ -50,7 +50,7 @@ paths:
                   $ref: '#/components/schemas/Hero'
 
   /home/hero/{id}:
-    put:
+    post:
       tags:
         - hero
       summary: Modification d'un hero
@@ -85,12 +85,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
+
+  /promotional_banner/{id}:
     put:
       tags:
         - promotional_banner
       operationId: updatePromotionalBanner
       summary: Met à jour la bannière promotionnelle.
       description: Cette méthode permet de modifier la bannière promotionnelle.
+      parameters:
+         - in: path
+           name: id
+           required: true
+           description: ID de la bannière à modifier
+           schema:
+             type: integer
+             example: 10
       requestBody:
         required: true
         content:
@@ -123,10 +133,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VideoSection'
-    put:
+
+  /home/video_section/{id}:
+    post:
         tags:
           - video_section
         summary: Création d'une nouvelle section Vidéo
+        parameters:
+          - in: path
+            name: id
+            required: true
+            description: ID de la section vidéo à modifier
+            schema:
+              type: integer
+              example: 10
         requestBody:
           required: true
           content:
@@ -145,7 +165,7 @@ paths:
           '404':
             description: 'Ressource non trouvée.'
 
-  /home/rooms:
+  /home/room_category:
     get:
       tags:
         - rooms
@@ -208,7 +228,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Advantages'
   /home/advantages/{id}:
-    put:
+    post:
       tags:
         - advantages
       operationId: updateAdvantage
@@ -319,10 +339,10 @@ paths:
         '400':
           description: 'Erreur dans la requête.'
         '404':
-          description: 'Ressource non trouvée.'
+          description: 'Ressource non trouvée'
 
   /home/news/{id}:
-    put:
+    post:
       tags:
         - news
       operationId: updateNews
@@ -459,13 +479,6 @@ components:
     Hero:
       description: Modèle contenant les éléments du hero
       type: object
-      required:
-        - id
-        - title
-        - subtitle
-        - media_id
-        - title_english
-        - subtitle_english
        
       properties:
         id:
@@ -490,10 +503,6 @@ components:
     PromotionalBanner:
       description: Modèle contenant les éléments de la bannière promotionnelle.
       type: object
-      required:
-        - id
-        - text_french
-        - text_english
 
       properties:
         id:
@@ -509,13 +518,6 @@ components:
     VideoSection:
       description: Modèle contenant les éléments de la section Vidéo
       type: object
-      required:
-        - id
-        - video_url
-        - title
-        - title_english
-        - description
-        - description_english
        
       properties:
         id:
@@ -540,12 +542,7 @@ components:
 
     RoomCategories:
       description: Propriétés des catégories de chambres dans la base de donnée, avec l'url de leur image.
-      required:
-        - url
-        - title_french
-        - title_english
-        - description_french
-        - description_english
+
       type: object
       properties:
         id:
@@ -566,12 +563,6 @@ components:
     Advantages:
       description: Modèle contenant les éléments de la section Avantages 
       type: object
-      required:
-        - icon_url
-        - title_french
-        - title_english
-        - description_french
-        - description_english
 
       properties:
         id:
@@ -596,13 +587,6 @@ components:
     Reviews:
       description: Modèle contenant les éléments d'un avis.
       type: object
-      required:
-          - id
-          - customer_id
-          - rating
-          - body
-          - is_displayed
-          - created_at
 
       properties:
         id:
@@ -630,13 +614,6 @@ components:
     News:
       description: Modèle contenant les éléments de la section Actualités
       type: object
-      required:
-        - url
-        - title_french
-        - title_english
-        - description_french
-        - description_english
-        - created_at
 
       properties:
         id:
@@ -664,11 +641,6 @@ components:
     Footer:
       description: Contient les liens qui forment les entrées du footer.
       type: object
-      required:
-        - id
-        - column
-        - entry_name
-        - url_redirection
 
       properties:
         id:
@@ -690,10 +662,6 @@ components:
     SocialMedia:
       description: Icônes et liens des réseaux sociaux.
       type: object
-      required:
-        - id
-        - logo_svg
-        - social_url
 
       properties:
         id:
