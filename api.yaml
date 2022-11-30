@@ -6,7 +6,10 @@ info:
   version: "1.0.0"
   title: "API sécurisée pour l'administration  du site de l'hôtel Artichaut"
   description: >-
-    Possibilité de modifier, supprimer ou créer de nouveaux contenus sur la landing page de l'hôtel Artichaut. 
+    Possibilité de modifier, supprimer ou créer de nouveaux contenus sur la landing page de l'hôtel Artichaut.
+    Les requêtes peuvent être faites à partir de [Postman](https://www.postman.com).  
+    Tous les champs traductibles peuvent être entré avec en clé le nom du champ, et entre crochet le nom de la langue, par exemple
+    `title[fr]` et `title[en]`.
   contact:
     # Un commentaire
     name: Team name 
@@ -31,6 +34,8 @@ tags:
     description: Administration du footer
   - name: social_media
     description: Administration des réseaux sociaux
+  - name: options
+    description: Administration des options de réservations possibles
 
 paths:
   /home/hero:
@@ -49,7 +54,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Hero'
 
-  /home/hero/{id}:
+
+  /home/hero/{slug}:
     post:
       tags:
         - hero
@@ -57,18 +63,28 @@ paths:
       description: Modification d'un hero spécifique
       parameters:
         - in: path
-          name: id
+          name: slug
           required: true
-          description: ID du hero à modifier
+          description: Slug du hero à modifier
           schema:
-            type: integer
-            example: 10
+            type: string
+            example: default-hero
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Hero'
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                subtitle:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
       responses:
         '200':
           description: 'Le hero a bien été modifié'
@@ -95,7 +111,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
-  /home/promotional_banner/{id}:
+
+  /home/promotional_banner/{slug}:
     put:
       tags:
         - promotional_banner
@@ -104,16 +121,16 @@ paths:
       description: Cette méthode permet de modifier la bannière promotionnelle.
       parameters:
         - in: path
-          name: id
+          name: slug
           required: true
-          description: ID de la bannière à modifier
+          description: Slug de la bannière à modifier
           schema:
             type: integer
             example: 10
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: '#/components/schemas/PromotionalBanner'
       responses:
@@ -169,7 +186,7 @@ paths:
   /home/room_category:
     get:
       tags:
-        - room_category
+        - room_categories
       summary: Récupération des éléments de la section Room Categories
       description: >-
         Liste des éléments de la section Room Categories
@@ -186,8 +203,8 @@ paths:
   /home/room_category/{id}:
     post:
       tags:
-        - room_category
-      summary: Modification d'une nouvelle section room_category
+        - room_categories
+      summary: Modification d'une section room_category
       parameters:
         - in: path
           name: id
@@ -199,9 +216,19 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/RoomCategories'
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                subtitle:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
       responses:
         '200':
           description: 'La catégorie a bien été modifiée'
@@ -246,11 +273,18 @@ paths:
           schema:
             type: integer
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Advantages'
+              type: object
+              properties:
+                icon_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
       responses:
         '200':
           description: 'Avantage mis à jour.'
@@ -363,9 +397,20 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/News'
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  media_url:
+                    type: string
+                    format: binary
+                  title:
+                    $ref: '#/components/schemas/Translatable'
+                  description:
+                    $ref: '#/components/schemas/Translatable'
+                  media_alt:
+                    $ref: '#/components/schemas/Translatable'
       responses:
         '200':
           description: 'Actualité créée.'
@@ -378,7 +423,6 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/news/{id}:
     put:
       tags:
         - news
@@ -395,11 +439,20 @@ paths:
           schema:
             type: integer
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/News'
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
       responses:
         '200':
           description: 'Actualité mise à jour.'
@@ -428,39 +481,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/Footer'
 
-#  /home/footer/{id}:
-#    put:
-#      tags:
-#        - footer
-#      operationId: updateFooter
-#      summary: Modifie une entrée du footer.
-#      description: >-
-#        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID.
-#        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-#      parameters:
-#        - in: path
-#          name: id
-#          required: true
-#          description: Id de l'avantage à modifier
-#          schema:
-#            type: integer
-#      requestBody:
-#        required: true
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/Footer'
-#      responses:
-#        '200':
-#          description: 'Entrée du footer mise à jour.'
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/Footer'
-#        '400':
-#          description: 'La syntaxe de la requête est erronée.'
-#        '404':
-#          description: 'Ressource non trouvée.'
+  /home/footer/{slug}:
+    put:
+      tags:
+        - footer
+      operationId: updateFooter
+      summary: Modifie une entrée du footer.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          description: Slug de l'avantage à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Footer'
+      responses:
+        '200':
+          description: 'Entrée du footer mise à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
 
   /home/social_medias:
     get:
@@ -477,42 +530,130 @@ paths:
               schema:
                 $ref: '#/components/schemas/SocialMedia'
 
-#  /home/social_medias/{id}:
-#    put:
-#      tags:
-#        - social_media
-#      operationId: updateSocialMedia
-#      summary: Modifie une entrée d'un élément des réseaux sociaux..
-#      description: >-
-#        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID.
-#        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-#      parameters:
-#        - in: path
-#          name: id
-#          required: true
-#          description: Id de l'avantage à modifier
-#          schema:
-#            type: integer
-#      requestBody:
-#        required: true
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/SocialMedia'
-#      responses:
-#        '200':
-#          description: 'Réseau social mis à jour.'
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/Footer'
-#        '400':
-#          description: 'La syntaxe de la requête est erronée.'
-#        '404':
-#          description: 'Ressource non trouvée.'
+  /home/social_medias/{id}:
+    put:
+      tags:
+        - social_media
+      operationId: updateSocialMedia
+      summary: Modifie une entrée d'un élément des réseaux sociaux..
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du réseau social à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                logo_url:
+                  type: string
+                  format: binary
+                social_url:
+                  type: string
+                  format: url
+                  example: 'https://www.facebook.com/hotelarth'
+      responses:
+        '200':
+          description: 'Réseau social mis à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /reservation/options:
+    get:
+      tag:
+        - options
+      operationId: getAllOptions
+      summary: Récupère toutes les options disponibles à la réservation.
+      responses:
+        '200':
+          description: Hero affiché
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Options'
+
+  /reservation/options/{id}:
+    post:
+      tags:
+        - options
+      operationId: modifyOptions
+      summary: Permet de créer une option
+      description: >-
+        Cette méthode permet de créer une option de réservation.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              option_name:
+                $ref: '#/components/schemas/Translatable'
+              option_price:
+                type: integer
+                example: 1
+    put:
+      tags:
+        - options
+      operationId: modifyOptions
+      summary: Permet de modifier une option
+      description: >-
+        Cette méthode permet de modifier une option de réservation.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              option_name:
+                $ref: '#/components/schemas/Translatable'
+              option_price:
+                type: integer
+                example: 1
+
+
+      responses:
+        '200':
+          description: 'Avantage mis à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Options'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
 
 components:
-  schemas: 
+  schemas:
+    Translatable:
+      description: Modèle pour les champs traductibles
+      type: object
+
+      properties:
+        fr:
+          type: string
+          example: Du texte français
+        en:
+          type: string
+          example: Some english text
+
     Hero:
       description: Modèle contenant les éléments du hero
       type: object
@@ -521,21 +662,19 @@ components:
         id:
           type: integer
           example: 5
+        slug:
+          format: string
+          example: default-hero
         title:
-          type: string
-          example: Titre de page
+          $ref: '#/components/schemas/Translatable'
         subtitle:
-          type: string
-          example: Le sous titre de ma page
+          $ref: '#/components/schemas/Translatable'
         media_url:
           type: string
+          format: url
           example: path/to/the/file
-        title_english:
-          type: string
-          example: The Title
-        subtitle_english:
-          type: string
-          example: The subtitle of may page
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
         
     PromotionalBanner:
       description: Modèle contenant les éléments de la bannière promotionnelle.
@@ -545,12 +684,11 @@ components:
         id:
           type: integer
           example: 0
-        text_french:
+        text:
+          $ref: '#/components/schemas/Translatable'
+        slug:
           type: string
-          example: "Mon texte français"
-        text_english:
-          type: string
-          example: "My english text"
+          example: default-banner
 
     PresentationVideo:
       description: Modèle contenant les éléments de la section Vidéo
@@ -584,18 +722,17 @@ components:
       properties:
         id:
           type: integer
-        url:
+        media_url:
           type: string
-        title_french:
-          type: string
-        title_english:
-          type: string
-          format: date
-        description_french:
-          type: string
-          format: date
-        description_english:
-          type: string
+          format: url
+          example: /path/to/your/file
+        title:
+          $ref: '#/components/schemas/Translatable'
+        description:
+          $ref: '#/components/schemas/Translatable'
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
+
 
     Advantages:
       description: Modèle contenant les éléments de la section Avantages 
@@ -607,19 +744,12 @@ components:
           example: 3
         icon_url:
           type: string
+          format: url
           example: 'https://fonts.googleapis.com/icon?family=Material+Icons'
-        title_french: 
-          type: string
-          example: "Mon titre en français"
-        title_english:
-          type: string
-          example: "My english title"
-        description_french:
-          type: string
-          example: "Description de mon avantage"
-        description_english:
-          type: string
-          example: "Description of my advantage"
+        title:
+          $ref: '#/components/schemas/Translatable'
+        description:
+          $ref: '#/components/schemas/Translatable'
       
     Reviews:
       description: Modèle contenant les éléments d'un avis.
@@ -656,21 +786,16 @@ components:
         id:
           type: integer
           example: 3
-        url:
+        media_url:
           type: string
+          format: url
           example: 'https://hotelarth.fr/news/98'
-        title_french:
-          type: string
-          example: "Mon titre en français"
-        title_english:
-          type: string
-          example: "My english title"
-        description_french:
-          type: string
-          example: "Description de mon avantage"
-        description_english:
-          type: string
-          example: "Description of my advantage"
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
+        title:
+          $ref: '#/components/schemas/Translatable'
+        description:
+          $ref: '#/components/schemas/Translatable'
         created_at:
           type: string
           format: date-time
@@ -686,15 +811,17 @@ components:
         column:
           type: integer
           enum:
-            - 0
             - 1
             - 2
         entry_name:
-          type: string
-          example: 'Ceci est une chaîne de caractère'
+          $ref: '#/components/schemas/Translatable'
         url_redirection:
           type: string
+          format: url
           example: 'http://www.url.com/example'
+        slug:
+          type: string
+          example: christmas-footer
 
     SocialMedia:
       description: Icônes et liens des réseaux sociaux.
@@ -710,6 +837,20 @@ components:
         social_url:
           type: string
           example: 'https://www.facebook.com/hotelarth'
+
+    Options:
+        description: Options disponibles à la réservation.
+        type: object
+
+        properties:
+          id:
+            type: integer
+            example: 1
+          option_name:
+            $ref: '#/components/schemas/Translatable'
+          option_price:
+            type: float
+
 
   securitySchemes:
     password:
