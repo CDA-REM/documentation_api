@@ -6,16 +6,16 @@ info:
   version: "1.0.0"
   title: "API sécurisée pour l'administration  du site de l'hôtel Artichaut"
   description: >-
-    Possibilité de modifier, supprimer ou créer de nouveaux contenus sur la landing page de l'hôtel Artichaut.
+    Possibilité de modifier, supprimer ou créer de nouveaux contenus sur la landing page de l'hôtel Arth.
     Les requêtes peuvent être faites à partir de [Postman](https://www.postman.com).  
     Tous les champs traductibles peuvent être entré avec en clé le nom du champ, et entre crochet le nom de la langue, par exemple
     `title[fr]` et `title[en]`.
   contact:
     # Un commentaire
-    name: Team name 
+    name: Team name
     email: you@your-company.com
 
-tags: 
+tags:
   - name: hero
     description: Administration de la section Hero
   - name: promotional_banner
@@ -125,8 +125,8 @@ paths:
           required: true
           description: Slug de la bannière à modifier
           schema:
-            type: integer
-            example: 10
+            type: string
+            example: default_banner
       requestBody:
         required: true
         content:
@@ -150,27 +150,46 @@ paths:
       tags:
         - presentation_video
       summary: Récupération des éléments de la section vidéo
-      description: >-
-        Liste des sections vidéo
+      description: Affiche la section vidéo
       responses:
         '200':
-          description: Section vidéo affichées
+          description: Section vidéo affichée
           content:
             application/json:
               schema:
+                type: array
                 $ref: '#/components/schemas/PresentationVideo'
-                
-  /home/presentation_video/{id}:
+
+  /home/presentation_video/{slug}:
     post:
       tags:
         - presentation_video
-      summary: Création d'une nouvelle section Vidéo
+      summary: Modification de la section Vidéo
+      description: Modification d'une section vidéo spécifique
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          description: Slug de la section vidéo à modifier
+          schema:
+            type: string
+            example: default-presentation_video
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PresentationVideo'
+              type: object
+              properties:
+                video_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+                video_alt:
+                  $ref: '#/components/schemas/Translatable'
       responses:
         '200':
           description: 'La section vidéo a bien été modifiée.'
@@ -494,7 +513,7 @@ paths:
         - in: path
           name: slug
           required: true
-          description: Slug de l'avantage à modifier
+          description: Slug du footer à modifier
           schema:
             type: integer
       requestBody:
@@ -657,7 +676,7 @@ components:
     Hero:
       description: Modèle contenant les éléments du hero
       type: object
-       
+
       properties:
         id:
           type: integer
@@ -675,7 +694,7 @@ components:
           example: path/to/the/file
         media_alt:
           $ref: '#/components/schemas/Translatable'
-        
+
     PromotionalBanner:
       description: Modèle contenant les éléments de la bannière promotionnelle.
       type: object
@@ -693,27 +712,24 @@ components:
     PresentationVideo:
       description: Modèle contenant les éléments de la section Vidéo
       type: object
-       
+
       properties:
         id:
           type: integer
           example: 4
+        slug:
+          format: string
+          example: default-hero
+        title:
+          $ref: '#/components/schemas/Translatable'
+        description:
+          $ref: '#/components/schemas/Translatable'
         video_url:
           type: string
           format: url
-          example: 'https://www.hotelArtichaud.com/video1'
-        title:
-          type: string
-          example: Titre de ma vidéo
-        title_english:
-          type: string
-          example: The title in english
-        description:
-          type: string
-          example: La description de la vidéo
-        description_english:
-          type: string
-          example: The description in english
+          example: path/to/the/file
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
 
     RoomCategories:
       description: Propriétés des catégories de chambres dans la base de donnée, avec l'url de leur image.
@@ -735,7 +751,7 @@ components:
 
 
     Advantages:
-      description: Modèle contenant les éléments de la section Avantages 
+      description: Modèle contenant les éléments de la section Avantages
       type: object
 
       properties:
@@ -750,7 +766,7 @@ components:
           $ref: '#/components/schemas/Translatable'
         description:
           $ref: '#/components/schemas/Translatable'
-      
+
     Reviews:
       description: Modèle contenant les éléments d'un avis.
       type: object
@@ -839,17 +855,17 @@ components:
           example: 'https://www.facebook.com/hotelarth'
 
     Options:
-        description: Options disponibles à la réservation.
-        type: object
+      description: Options disponibles à la réservation.
+      type: object
 
-        properties:
-          id:
-            type: integer
-            example: 1
-          option_name:
-            $ref: '#/components/schemas/Translatable'
-          option_price:
-            type: float
+      properties:
+        id:
+          type: integer
+          example: 1
+        option_name:
+          $ref: '#/components/schemas/Translatable'
+        option_price:
+          type: float
 
 
   securitySchemes:
