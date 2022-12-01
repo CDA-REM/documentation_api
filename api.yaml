@@ -102,7 +102,7 @@ paths:
       tags:
         - promotional_banner
       operationId: getPromotionalBanner
-      summary: Renvoie les propriétés de la banière promotionnelle.
+      summary: Renvoie les propriétés de la bannière promotionnelle.
       description: Cette méthode ne prend aucun paramètre et permet de consulter les champs de la bannière promotionnelle.
       responses:
         '200':
@@ -149,6 +149,7 @@ paths:
     get:
       tags:
         - presentation_video
+      operationId: getVideo
       summary: Récupération des éléments de la section vidéo
       description: Affiche la section vidéo
       responses:
@@ -164,6 +165,7 @@ paths:
     post:
       tags:
         - presentation_video
+      operationId: updateVideo
       summary: Modification de la section Vidéo
       description: Modification d'une section vidéo spécifique
       parameters:
@@ -322,7 +324,7 @@ paths:
         - reviews
       operationId: getReviews
       summary: Récupère les avis des visiteurs de l'hôtel.
-      description: Cette section retourne tous les avis.
+      description: Cette section retourne les avis des utilisateurs.
       responses:
         '200':
           description: Avis renvoyés avec succès.
