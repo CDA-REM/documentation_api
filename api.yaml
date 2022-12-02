@@ -329,7 +329,7 @@ paths:
       tags:
         - reviews
       operationId: getReviews
-      summary: Récupère les avis des visiteurs de l'hôtel.
+      summary: Récupère l'ensemble des avis des visiteurs de l'hôtel.
       description: >-
         Cette route permet de récupérer l'ensemble des avis utilisateurs.
         La requête ne prend aucun paramètre. La réponse retourne les avis des utilisateurs.
@@ -348,7 +348,7 @@ paths:
       tags:
         - reviews
       operationId: createReview
-      summary: Créer un avis utilisateur
+      summary: Crée un avis utilisateur
       description: >-
         Cette méthode permet aux clients ayant séjourné à l'hôtel de laisser un avis.
         Le body de la requête doit contenir les toutes les informations nécessaires à la création d'un avis.
@@ -357,10 +357,11 @@ paths:
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               $ref: '#/components/schemas/Reviews'
               type: object
+
               properties:
                 customer_id:
                   type: integer
@@ -416,7 +417,10 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Reviews'
+              properties:
+                is_displayed:
+                  type: boolean
+                  example: false
       responses:
         '200':
           description: Avis modifié avec succès.
@@ -444,64 +448,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/News'
 
-  /home/news/{id}:
     post:
       tags:
         - news
-      operationId: postNews
+      operationId: updateNews
       summary: Permet de créer une toute nouvelle actualité.
       description: Cette méthode permet de créer une nouvelle actualité en passant tous les champs du modèle actualité.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id de la news à modifier
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          content:
-            multipart/form-data:
-              schema:
-                type: object
-                properties:
-                  media_url:
-                    type: string
-                    format: binary
-                  title:
-                    $ref: '#/components/schemas/Translatable'
-                  description:
-                    $ref: '#/components/schemas/Translatable'
-                  media_alt:
-                    $ref: '#/components/schemas/Translatable'
-      responses:
-        '200':
-          description: 'Actualité créée.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/News'
-        '400':
-          description: 'Erreur dans la requête.'
-        '404':
-          description: 'Ressource non trouvée.'
-
-    put:
-      tags:
-        - news
-      operationId: updateNews
-      summary: Modifie une actualité.
-      description: >-
-        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
-        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id de la news à modifier
-          schema:
-            type: integer
       requestBody:
         content:
           multipart/form-data:
@@ -526,6 +478,50 @@ paths:
                 $ref: '#/components/schemas/News'
         '400':
           description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/news/{id}:
+    post:
+      tags:
+        - news
+      operationId: postNews
+      summary: Modifie une actualité.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de la news à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
+      responses:
+        '200':
+          description: 'Actualité créée.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        '400':
+          description: 'Erreur dans la requête.'
         '404':
           description: 'Ressource non trouvée.'
 
@@ -638,7 +634,7 @@ paths:
 
   /reservation/options:
     get:
-      tag:
+      tags:
         - options
       operationId: getAllOptions
       summary: Récupère toutes les options disponibles à la réservation.
@@ -671,6 +667,7 @@ paths:
               option_price:
                 type: integer
                 example: 1
+
     put:
       tags:
         - options
@@ -689,8 +686,6 @@ paths:
               option_price:
                 type: integer
                 example: 1
-
-
       responses:
         '200':
           description: 'Avantage mis à jour.'
@@ -698,6 +693,121 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Options'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /customers/create:
+    post:
+      tags:
+        - customers
+      operationId: createCustomer
+      summary: Créer un nouveau compte
+      description: >-
+        Cette méthode permet de créer un compte pour un nouveau client et d'enregistrer ses informations personnelles.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Customers'
+      responses:
+        '200':
+          description: 'Nouveau compte utilisateur crée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+  /customers/{id}:
+    get:
+      tags:
+        - customers
+      operationId: getCustomer
+      summary: Récupérer les informations d'un client de l'hôtel.
+      description: >-
+        Cette méthode permet de récupérer toutes les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Informations client renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+
+    put:
+      tags:
+        - customers
+      operationId: modifyCustomer
+      summary: Modifier les informations personnelles d'un utilisateur
+      description: >-
+        Cette méthode permet de modifier les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre. Tous les champs doivent être remplis sauf ceux relatifs à 
+        l'employeur pour les clients qui voyagent à titre personnel.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+            example: 2
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Customers'
+      responses:
+        '200':
+          description: Informations client modifiées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+    delete:
+      tags:
+        - customers
+      operationId: modifyCustomer
+      summary: Supprimer les informations personnelles d'un utilisateur
+      description: >-
+        Cette méthode permet de supprimer les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre. Tous les champs doivent être remplis sauf ceux relatifs à 
+        l'employeur pour les clients qui voyagent à titre personnel.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Informations client supprimées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
@@ -828,6 +938,8 @@ components:
         rating:
           type: number
           format: integer
+          minimum: 1
+          maximum: 5
           example: 5
         body:
           type: string
@@ -911,6 +1023,69 @@ components:
           $ref: '#/components/schemas/Translatable'
         option_price:
           type: float
+
+    Customers:
+      description : >-
+        Modèle contenant les propriétés des Customers. Le terme "Customers" a été choisi pour être plus proche de la logique métier d'un hôtel.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 16
+        gender:
+          type: string
+          example: "Monsieur"
+        firstname:
+          type: string
+          example: "Alain"
+        lastname:
+          type: string
+          example: "Deloin"
+        email:
+          type: string
+          format: email
+          example: "a.deloin@example.fr"
+        phone:
+          type: string
+          example: "0493565044"
+        avatar_url:
+          type: string
+          example: "assets/avatars/avatar1.png"
+        password:
+          type: string
+          example: d3vin3_mon_p4ssw0rD
+        personal_address:
+          type: string
+          example:
+        enterprise_name:
+          type: string
+          example: "Art' Devlopment"
+        professional_address:
+          type: string
+          example: "4001, boulevard du middleware, 74000 Annecy"
+
+    Admin:
+      description: Modèle contenant les propriétés des Administrateurs.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 8
+        username:
+          type: string
+          example: "Manager1"
+        firstname:
+          type: string
+          example: "Jean"
+        lastname:
+          type: string
+          example: "Bonnet"
+        password:
+          type: string
+          format: password
+          example: "S3cr3t_P4ssworD"
 
 
   securitySchemes:
