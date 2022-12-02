@@ -151,7 +151,7 @@ paths:
         - presentation_video
       operationId: getVideo
       summary: Récupération des éléments de la section vidéo
-      description: Affiche la section vidéo
+      description: Cette méthode ne prend aucun paramètre et retourne les propriétés de la section video.
       responses:
         '200':
           description: Section vidéo affichée
@@ -160,14 +160,20 @@ paths:
               schema:
                 type: array
                 $ref: '#/components/schemas/PresentationVideo'
+        '404':
+          description: 'Ressource non trouvée.'
 
   /home/presentation_video/{slug}:
     post:
       tags:
         - presentation_video
       operationId: updateVideo
-      summary: Modification de la section Vidéo
-      description: Modification d'une section vidéo spécifique
+      summary: Modification d'une section vidéo spécifique
+      description: >-
+        Cette méthode permet de modifier les propriétés de la section video.
+        Elle est utilisée à la place d'une méthode put afin de prendre en charge le média vidéo. 
+        Elle prend un paramètre, le slug, et met à jour l'enregistrement correspondant.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
       parameters:
         - in: path
           name: slug
@@ -324,22 +330,79 @@ paths:
         - reviews
       operationId: getReviews
       summary: Récupère les avis des visiteurs de l'hôtel.
-      description: Cette section retourne les avis des utilisateurs.
+      description: >-
+        Cette route permet de récupérer l'ensemble des avis utilisateurs.
+        La requête ne prend aucun paramètre. La réponse retourne les avis des utilisateurs.
       responses:
         '200':
           description: Avis renvoyés avec succès.
           content:
             application/json:
               schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reviews'
+        '404':
+          description: 'Ressource non trouvée.'
+    post:
+      tags:
+        - reviews
+      operationId: createReview
+      summary: Créer un avis utilisateur
+      description: >-
+        Cette méthode permet aux clients ayant séjourné à l'hôtel de laisser un avis.
+        Le body de la requête doit contenir les toutes les informations nécessaires à la création d'un avis.
+        Par défaut, la propriété is_displayed a pour valeur "0" correspondant à "false".
+        L'administrateur pourra la modifier afin de publier l'avis sur la landing page.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reviews'
+              type: object
+              properties:
+                customer_id:
+                  type: integer
+                  example: 3
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  example: 5
+                title:
+                  type: string
+                  example: Un merveilleux séjour
+                body:
+                  type: string
+                  example: "Nous avons passé un excellent séjour à l'hôtel Arth"
+                is_displayed:
+                  type: boolean
+                  example: false
+                created_at:
+                  type: timestamp
+                  example: 10/11/2021
+      responses:
+        '200':
+          description: 'Avis client enregistré'
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/Reviews'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
 
   /home/reviews/{id}:
     put:
       tags:
         - reviews
-      operationId: modifyReviews
-      summary: Permet de modifier le champ isDisplayed. L'avis sera affiché si isDisplayed a pour valeur `true`.
-      description: Cette section permet de modifier la valeur isDisplayed d'un avis en true ou false.
+      operationId: modifyReview
+      summary: Modifier un avis client.
+      description: >-
+        Cette méthode permet à l'administrateur de modifier la valeur isDisplayed : 0 ou 1.
+        L'avis sera affiché si isDisplayed a pour valeur 1, correspondant à "true".
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé. Seul la propriété 
+        is_displayed peut-être modifiée.
       parameters:
         - in: path
           name: id
@@ -348,6 +411,12 @@ paths:
           schema:
             type: integer
             example: 10
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reviews'
       responses:
         '200':
           description: Avis modifié avec succès.
@@ -357,32 +426,6 @@ paths:
                 $ref: '#/components/schemas/Reviews'
         '400':
           description: 'Erreur dans la requête.'
-        '404':
-          description: 'Ressource non trouvée.'
-
-    post:
-      tags:
-        - reviews
-      operationId: createReview
-      summary: Permet de créer une nouvelle Review
-      description: >-
-        Cette méthode crée une nouvelle Review.
-        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Advantages'
-      responses:
-        '200':
-          description: 'Avantage mis à jour.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Reviews'
-        '400':
-          description: 'La syntaxe de la requête est erronée.'
         '404':
           description: 'Ressource non trouvée.'
 
@@ -784,8 +827,8 @@ components:
           example: 14
         rating:
           type: number
-          format: float
-          example: 3.5
+          format: integer
+          example: 5
         body:
           type: string
           example: "Voilà mon avis"
