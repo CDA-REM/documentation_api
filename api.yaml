@@ -6,24 +6,25 @@ info:
   version: "1.0.0"
   title: "API sécurisée pour l'administration  du site de l'hôtel Artichaut"
   description: >-
-    Possibilité de modifier, supprimer ou créer de nouveaux contenus sur la landing page de l'hôtel Artichaut. 
+    Possibilité de modifier, supprimer ou créer de nouveaux contenus sur la landing page de l'hôtel Arth.
+    Les requêtes peuvent être faites à partir de [Postman](https://www.postman.com).  
+    Tous les champs traductibles peuvent être entré avec en clé le nom du champ, et entre crochet le nom de la langue, par exemple
+    `title[fr]` et `title[en]`.
   contact:
     # Un commentaire
-    name: Team name 
+    name: Team name
     email: you@your-company.com
-  
-security:
-  - password:
-      - read
-      - write
-tags: 
+
+tags:
   - name: hero
     description: Administration de la section Hero
-  - name: video_section
+  - name: promotional_banner
+    description: Administration de la bannière promotionnelle
+  - name: presentation_video
     description: Administration de la section Vidéo
-  - name: rooms
+  - name: room_categories
     description: Administration de la section Chambres
-  - name: avantages
+  - name: advantages
     description: Administration de la section Avantages
   - name: reviews
     description: Administration de la section Avis
@@ -31,6 +32,11 @@ tags:
     description: Administration de la section Actualités
   - name: footer
     description: Administration du footer
+  - name: social_media
+    description: Administration des réseaux sociaux
+  - name: options
+    description: Administration des options de réservations possibles
+
 paths:
   /home/hero:
     get:
@@ -46,221 +52,1042 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HeroList'
-    
+                  $ref: '#/components/schemas/Hero'
+
+
+  /home/hero/{slug}:
     post:
-      tags:
-        - hero
-      summary: Création d'un nouvel hero
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HeroList'
-      responses:
-        '200':
-          description: 'Le hero a bien été créé'
-        '400':
-          description: 'La syntaxe de la requête est erronée.'
-  /home/hero/{id}:
-    put:
       tags:
         - hero
       summary: Modification d'un hero
       description: Modification d'un hero spécifique
       parameters:
         - in: path
-          name: id
+          name: slug
           required: true
-          description: ID du hero à modifier
+          description: Slug du hero à modifier
           schema:
-            type: integer
-            example: 10
+            type: string
+            example: default-hero
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                subtitle:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
       responses:
         '200':
-          description: 'Le hero a bien été créé'
+          description: 'Le hero a bien été modifié'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hero'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
-          description: 'Ressource non trouvée.'  
-            
-            
-  /home/video_section:
+          description: 'Ressource non trouvée.'
+
+  /home/promotional_banner:
     get:
       tags:
-        - video_section
+        - promotional_banner
+      operationId: getPromotionalBanner
+      summary: Renvoie les propriétés de la bannière promotionnelle.
+      description: Cette méthode ne prend aucun paramètre et permet de consulter les champs de la bannière promotionnelle.
+      responses:
+        '200':
+          description: Champs de la bannière promotionnelle.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionalBanner'
+
+  /home/promotional_banner/{slug}:
+    put:
+      tags:
+        - promotional_banner
+      operationId: updatePromotionalBanner
+      summary: Met à jour la bannière promotionnelle.
+      description: Cette méthode permet de modifier la bannière promotionnelle.
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          description: Slug de la bannière à modifier
+          schema:
+            type: string
+            example: default_banner
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PromotionalBanner'
+      responses:
+        '200':
+          description: Bannière mise à jour avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionalBanner'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/presentation_video:
+    get:
+      tags:
+        - presentation_video
+      operationId: getVideo
       summary: Récupération des éléments de la section vidéo
-      description: >-
-        Liste des sections vidéo
+      description: Cette méthode ne prend aucun paramètre et retourne les propriétés de la section video.
       responses:
         '200':
-          description: Section vidéo affichées
+          description: Section vidéo affichée
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: '#/components/schemas/PresentationVideo'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/presentation_video/{slug}:
+    post:
+      tags:
+        - presentation_video
+      operationId: updateVideo
+      summary: Modification d'une section vidéo spécifique
+      description: >-
+        Cette méthode permet de modifier les propriétés de la section video.
+        Elle est utilisée à la place d'une méthode put afin de prendre en charge le média vidéo. 
+        Elle prend un paramètre, le slug, et met à jour l'enregistrement correspondant.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          description: Slug de la section vidéo à modifier
+          schema:
+            type: string
+            example: default-presentation_video
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+                video_alt:
+                  $ref: '#/components/schemas/Translatable'
+      responses:
+        '200':
+          description: 'La section vidéo a bien été modifiée.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationVideo'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/room_category:
+    get:
+      tags:
+        - room_categories
+      summary: Récupération des éléments de la section Room Categories
+      description: >-
+        Liste des éléments de la section Room Categories
+      responses:
+        '200':
+          description: Elements de la section Room Categories affichés
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/VideoSectionList'  
-  
+                  $ref: '#/components/schemas/RoomCategories'
+
+  /home/room_category/{id}:
     post:
-        tags:
-          - video_section
-        summary: Création d'une nouvelle section Vidéo
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VideoSectionList'
-        responses:
-          '200':
-            description: 'La section vidéo a bien été créé'
-          '400':
-            description: 'La syntaxe de la requête est erronée.'
-  /home/video_section/{id}:
-    put:
       tags:
-        - video_section
-      summary: Modification d'une section vidéo
-      description: Modification d'une section vidéo spécifique
+        - room_categories
+      summary: Modification d'une section room_category
       parameters:
         - in: path
           name: id
           required: true
-          description: ID de la section vidéo à modifier
+          description: ID de la catégorie à modifier
           schema:
             type: integer
-            example: 3
+            example: 10
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                subtitle:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
       responses:
         '200':
-          description: 'Le hero a bien été créé'
+          description: 'La catégorie a bien été modifiée'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomCategories'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
-          description: 'Ressource non trouvée.' 
-  
-  /home/rooms:
+          description: 'Ressource non trouvée.'
+
+  /home/advantages:
     get:
       tags:
-        - rooms
-      summary: Récupération des éléments de la section Rooms
-      description: >-
-        Liste des éléments de la section Rooms
+        - advantages
+      operationId: getAllAdvantages
+      summary: Récupère les avantages.
+      description: Cette section retourne tous les avantages mis en avant par l'hôtel.
       responses:
         '200':
-          description: Elements de la section Rooms affichés
+          description: Renvoie tous les avantages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advantages'
+
+  /home/advantages/{id}:
+    post:
+      tags:
+        - advantages
+      operationId: updateAdvantage
+      summary: Modifie l'un des avantages.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de l'avantage à modifier
+          schema:
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                icon_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+      responses:
+        '200':
+          description: 'Avantage mis à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advantages'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/reviews:
+    get:
+      tags:
+        - reviews
+      operationId: getReviews
+      summary: Récupère l'ensemble des avis des visiteurs de l'hôtel.
+      description: >-
+        Cette route permet de récupérer l'ensemble des avis utilisateurs.
+        La requête ne prend aucun paramètre. La réponse retourne les avis des utilisateurs.
+      responses:
+        '200':
+          description: Avis renvoyés avec succès.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RoomsList'
-    
+                  $ref: '#/components/schemas/Reviews'
+        '404':
+          description: 'Ressource non trouvée.'
     post:
       tags:
-        - rooms
-      summary: Création d'une nouvelle section Rooms
+        - reviews
+      operationId: createReview
+      summary: Crée un avis utilisateur
+      description: >-
+        Cette méthode permet aux clients ayant séjourné à l'hôtel de laisser un avis.
+        Le body de la requête doit contenir les toutes les informations nécessaires à la création d'un avis.
+        Par défaut, la propriété is_displayed a pour valeur "0" correspondant à "false".
+        L'administrateur pourra la modifier afin de publier l'avis sur la landing page.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RoomsList'
+              $ref: '#/components/schemas/Reviews'
+              type: object
+
+              properties:
+                customer_id:
+                  type: integer
+                  example: 3
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  example: 5
+                title:
+                  type: string
+                  example: Un merveilleux séjour
+                body:
+                  type: string
+                  example: "Nous avons passé un excellent séjour à l'hôtel Arth"
+                is_displayed:
+                  type: boolean
+                  example: false
+                created_at:
+                  type: timestamp
+                  example: 10/11/2021
       responses:
         '200':
-          description: 'Le hero a bien été créé'
+          description: 'Avis client enregistré'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reviews'
         '400':
           description: 'La syntaxe de la requête est erronée.'
-  /home/hero/{id}:
+
+  /home/reviews/{id}:
     put:
       tags:
-        - hero
-      summary: Modification d'un hero
-      description: Modification d'un hero spécifique
+        - reviews
+      operationId: modifyReview
+      summary: Modifier un avis client.
+      description: >-
+        Cette méthode permet à l'administrateur de modifier la valeur isDisplayed : 0 ou 1.
+        L'avis sera affiché si isDisplayed a pour valeur 1, correspondant à "true".
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé. Seul la propriété 
+        is_displayed peut-être modifiée.
       parameters:
         - in: path
           name: id
           required: true
-          description: ID du hero à modifier
+          description: ID de l'avis à modifier
           schema:
             type: integer
             example: 10
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                is_displayed:
+                  type: boolean
+                  example: false
       responses:
         '200':
-          description: 'Le hero a bien été créé'
+          description: Avis modifié avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reviews'
+        '400':
+          description: 'Erreur dans la requête.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/news:
+    get:
+      tags:
+        - news
+      operationId: getAllNews
+      summary: Permet de récupérer les éléments de toutes les actualités.
+      description: Cette section retourne toutes les actualités de l'hôtel.
+      responses:
+        '200':
+          description: Actualités renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+
+    post:
+      tags:
+        - news
+      operationId: updateNews
+      summary: Permet de créer une toute nouvelle actualité.
+      description: Cette méthode permet de créer une nouvelle actualité en passant tous les champs du modèle actualité.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
+      responses:
+        '200':
+          description: 'Actualité mise à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
-          description: 'Ressource non trouvée.'  
-  
+          description: 'Ressource non trouvée.'
+
+  /home/news/{id}:
+    post:
+      tags:
+        - news
+      operationId: postNews
+      summary: Modifie une actualité.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de la news à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
+      responses:
+        '200':
+          description: 'Actualité créée.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        '400':
+          description: 'Erreur dans la requête.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+
+  /home/footer:
+    get:
+      tags:
+        - footer
+      operationId: getAllFooter
+      summary: Permet de récupérer tous les éléments du footer, hormis les réseaux sociaux.
+      description: Cette section retourne toutes les entrées du footer sauf les réseaux sociaux.
+      responses:
+        '200':
+          description: Footer renvoyé avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+
+  /home/footer/{slug}:
+    put:
+      tags:
+        - footer
+      operationId: updateFooter
+      summary: Modifie une entrée du footer.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          description: Slug du footer à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Footer'
+      responses:
+        '200':
+          description: 'Entrée du footer mise à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/social_medias:
+    get:
+      tags:
+        - social_media
+      operationId: getAllSocialMedia
+      summary: Permet de récupérer tous les éléments des réseaux sociaux.
+      description: Cette section retourne toutes les entrées des réseaux sociaux.
+      responses:
+        '200':
+          description: Réseau sociaux renvoyés avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialMedia'
+
+  /home/social_medias/{id}:
+    put:
+      tags:
+        - social_media
+      operationId: updateSocialMedia
+      summary: Modifie une entrée d'un élément des réseaux sociaux..
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du réseau social à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                logo_url:
+                  type: string
+                  format: binary
+                social_url:
+                  type: string
+                  format: url
+                  example: 'https://www.facebook.com/hotelarth'
+      responses:
+        '200':
+          description: 'Réseau social mis à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /reservation/options:
+    get:
+      tags:
+        - options
+      operationId: getAllOptions
+      summary: Récupère toutes les options disponibles à la réservation.
+      responses:
+        '200':
+          description: Hero affiché
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Options'
+
+  /reservation/options/{id}:
+    post:
+      tags:
+        - options
+      operationId: modifyOptions
+      summary: Permet de créer une option
+      description: >-
+        Cette méthode permet de créer une option de réservation.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              option_name:
+                $ref: '#/components/schemas/Translatable'
+              option_price:
+                type: integer
+                example: 1
+
+    put:
+      tags:
+        - options
+      operationId: modifyOptions
+      summary: Permet de modifier une option
+      description: >-
+        Cette méthode permet de modifier une option de réservation.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              option_name:
+                $ref: '#/components/schemas/Translatable'
+              option_price:
+                type: integer
+                example: 1
+      responses:
+        '200':
+          description: 'Avantage mis à jour.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Options'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /customers/create:
+    post:
+      tags:
+        - customers
+      operationId: createCustomer
+      summary: Créer un nouveau compte
+      description: >-
+        Cette méthode permet de créer un compte pour un nouveau client et d'enregistrer ses informations personnelles.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Customers'
+      responses:
+        '200':
+          description: 'Nouveau compte utilisateur crée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+  /customers/{id}:
+    get:
+      tags:
+        - customers
+      operationId: getCustomer
+      summary: Récupérer les informations d'un client de l'hôtel.
+      description: >-
+        Cette méthode permet de récupérer toutes les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Informations client renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+
+    put:
+      tags:
+        - customers
+      operationId: modifyCustomer
+      summary: Modifier les informations personnelles d'un utilisateur
+      description: >-
+        Cette méthode permet de modifier les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre. Tous les champs doivent être remplis sauf ceux relatifs à 
+        l'employeur pour les clients qui voyagent à titre personnel.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+            example: 2
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Customers'
+      responses:
+        '200':
+          description: Informations client modifiées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+    delete:
+      tags:
+        - customers
+      operationId: modifyCustomer
+      summary: Supprimer les informations personnelles d'un utilisateur
+      description: >-
+        Cette méthode permet de supprimer les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre. Tous les champs doivent être remplis sauf ceux relatifs à 
+        l'employeur pour les clients qui voyagent à titre personnel.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Informations client supprimées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+
 components:
-  schemas: 
-    HeroList:
+  schemas:
+    Translatable:
+      description: Modèle pour les champs traductibles
+      type: object
+
+      properties:
+        fr:
+          type: string
+          example: Du texte français
+        en:
+          type: string
+          example: Some english text
+
+    Hero:
       description: Modèle contenant les éléments du hero
       type: object
-      required:
-        - id
-        - title
-        - subtitle
-        - media_id
-        - title_english
-        - subtitle_english
-       
+
       properties:
         id:
           type: integer
           example: 5
+        slug:
+          format: string
+          example: default-hero
         title:
-          type: string
-          example: Titre de page
+          $ref: '#/components/schemas/Translatable'
         subtitle:
+          $ref: '#/components/schemas/Translatable'
+        media_url:
           type: string
-          example: Le sous titre de ma page
-        media_id:
+          format: url
+          example: path/to/the/file
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
+
+    PromotionalBanner:
+      description: Modèle contenant les éléments de la bannière promotionnelle.
+      type: object
+
+      properties:
+        id:
           type: integer
-          example: 3
-        title_english:
+          example: 0
+        text:
+          $ref: '#/components/schemas/Translatable'
+        slug:
           type: string
-          example: The Title
-        subtitle_english:
-          type: string
-          example: The subtitle of may page
-        
-          
-    VideoSectionList:
+          example: default-banner
+
+    PresentationVideo:
       description: Modèle contenant les éléments de la section Vidéo
       type: object
-      required:
-        - id
-        - video_url
-        - title
-        - title_english
-        - description
-        - description_english
-       
+
       properties:
         id:
           type: integer
           example: 4
+        slug:
+          format: string
+          example: default-hero
+        title:
+          $ref: '#/components/schemas/Translatable'
+        description:
+          $ref: '#/components/schemas/Translatable'
         video_url:
           type: string
           format: url
-          example: 'https://www.hotelArtichaud.com/video1'
+          example: path/to/the/file
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
+
+    RoomCategories:
+      description: Propriétés des catégories de chambres dans la base de donnée, avec l'url de leur image.
+
+      type: object
+      properties:
+        id:
+          type: integer
+        media_url:
+          type: string
+          format: url
+          example: /path/to/your/file
         title:
-          type: string
-          example: Titre de ma vidéo
-        title_english:
-          type: string
-          example: The title in english
+          $ref: '#/components/schemas/Translatable'
         description:
+          $ref: '#/components/schemas/Translatable'
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
+
+
+    Advantages:
+      description: Modèle contenant les éléments de la section Avantages
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 3
+        icon_url:
           type: string
-          example: La description de la vidéo
-        description_english:
+          format: url
+          example: 'https://fonts.googleapis.com/icon?family=Material+Icons'
+        title:
+          $ref: '#/components/schemas/Translatable'
+        description:
+          $ref: '#/components/schemas/Translatable'
+
+    Reviews:
+      description: Modèle contenant les éléments d'un avis.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 12
+        customer_id:
+          type: integer
+          format: int64
+          example: 14
+        rating:
+          type: number
+          format: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        body:
           type: string
-          example: The description in english
-        
-          
+          example: "Voilà mon avis"
+        is_displayed:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: timestamp
+
+    News:
+      description: Modèle contenant les éléments de la section Actualités
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 3
+        media_url:
+          type: string
+          format: url
+          example: 'https://hotelarth.fr/news/98'
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
+        title:
+          $ref: '#/components/schemas/Translatable'
+        description:
+          $ref: '#/components/schemas/Translatable'
+        created_at:
+          type: string
+          format: date-time
+
+    Footer:
+      description: Contient les liens qui forment les entrées du footer.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 1
+        column:
+          type: integer
+          enum:
+            - 1
+            - 2
+        entry_name:
+          $ref: '#/components/schemas/Translatable'
+        url_redirection:
+          type: string
+          format: url
+          example: 'http://www.url.com/example'
+        slug:
+          type: string
+          example: christmas-footer
+
+    SocialMedia:
+      description: Icônes et liens des réseaux sociaux.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 1
+        logo_svg:
+          type: string
+          example: 'path/to/svg'
+        social_url:
+          type: string
+          example: 'https://www.facebook.com/hotelarth'
+
+    Options:
+      description: Options disponibles à la réservation.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 1
+        option_name:
+          $ref: '#/components/schemas/Translatable'
+        option_price:
+          type: float
+
+    Customers:
+      description : >-
+        Modèle contenant les propriétés des Customers. Le terme "Customers" a été choisi pour être plus proche de la logique métier d'un hôtel.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 16
+        gender:
+          type: string
+          example: "Monsieur"
+        firstname:
+          type: string
+          example: "Alain"
+        lastname:
+          type: string
+          example: "Deloin"
+        email:
+          type: string
+          format: email
+          example: "a.deloin@example.fr"
+        phone:
+          type: string
+          example: "0493565044"
+        avatar_url:
+          type: string
+          example: "assets/avatars/avatar1.png"
+        password:
+          type: string
+          example: d3vin3_mon_p4ssw0rD
+        personal_address:
+          type: string
+          example:
+        enterprise_name:
+          type: string
+          example: "Art' Devlopment"
+        professional_address:
+          type: string
+          example: "4001, boulevard du middleware, 74000 Annecy"
+
+    Admin:
+      description: Modèle contenant les propriétés des Administrateurs.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 8
+        username:
+          type: string
+          example: "Manager1"
+        firstname:
+          type: string
+          example: "Jean"
+        lastname:
+          type: string
+          example: "Bonnet"
+        password:
+          type: string
+          format: password
+          example: "S3cr3t_P4ssworD"
+
+
   securitySchemes:
     password:
       type: oauth2
