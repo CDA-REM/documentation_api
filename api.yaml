@@ -36,6 +36,8 @@ tags:
     description: Administration des réseaux sociaux
   - name: options
     description: Administration des options de réservations possibles
+  - name: reservations
+    description: Informations de réservation
 
 paths:
   /home/hero:
@@ -359,7 +361,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Reviews'
-
       responses:
         '200':
           description: 'Avis client enregistré'
@@ -546,7 +547,6 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-
   /home/footer/{id}:
     put:
       tags:
@@ -732,6 +732,162 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
+
+#  /reservations/availability:
+#    get:
+#      tags:
+#        - reservations
+#      operationId: checkAvailability
+#      summary : Vérifie la disponibilité d'une réservation
+#      description : Vérifie la disponibilité d'une réservation en fonction des dates et des nombres de chambres demandée.
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              properties:
+#                check-in:
+#                  required: true
+#                  type: string
+#                  format: date
+#                  example: "2022-12-06"
+#                check-out:
+#                  properties:
+#                    type: string
+#                    format: date
+#                    example: "2022-12-06"
+#                number_of_rooms:
+#                  type: integer
+#                  example: 2
+#      responses:
+#        '200':
+#          description: 'Requête passée avec succès'
+#          content:
+#            application/json:
+#              schema:
+#                properties:
+#                  availability:
+#                    type: boolean
+#        '400':
+#            description: 'Manque de paramètres'
+
+  /reservations:
+    post:
+      tags:
+        - reservations
+      operationId: createReservation
+      summary: Créer une nouvelle réservation
+      description: >-
+        Cette méthode permet de créer une nouvelle réservation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservations'
+      responses:
+        '200':
+          description: 'Nouvelle réservation crée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+  /reservations/{id}:
+    get:
+      tags:
+        - reservations
+      operationId: updateReservation
+      summary: Modifie le statut d'une réservation.
+      description: >-
+        Cette méthode permet de modifier le statut d'une réservation uniquement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de la réservation à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservations'
+      responses:
+        '200':
+          description: 'Réservation modifiée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+    put:
+      tags:
+        - reservations
+      operationId: updateReservation
+      summary: Modifie le statut d'une réservation.
+      description: >-
+        Cette méthode permet de modifier le statut d'une réservation uniquement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de la réservation à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - "cancelled"
+                    - "terminated"
+                    - "no-show"
+                    - "validated"
+      responses:
+        '200':
+          description: 'Réservation modifiée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+
+  /reservations/user/{user_id}:
+    get:
+      tags:
+        - reservations
+      operationId: getReservationHistory
+      summary: Permet de voir l'historique de réservation d'un utilisateur.
+      description: >-
+        Cette méthode permet de consulter l'historique de réservation d'un utilisateur.
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          description: Id du User dont on veut l'historique
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Réservation modifiée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: "La ressource n'existe pas."
   /users/create:
     post:
       tags:
@@ -881,7 +1037,6 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '401':
           description: 'Accès refusé vérifier les identifiants utilisés.'
-
 
 components:
   schemas:
@@ -1060,7 +1215,7 @@ components:
         url_redirection:
           type: string
           format: url
-          example: 'http://www.url.com/example'
+          example: 'https://www.url.com/example'
 
     SocialMedia:
       description: Icônes et liens des réseaux sociaux.
@@ -1076,6 +1231,43 @@ components:
         social_url:
           type: string
           example: 'https://www.facebook.com/hotelarth'
+
+    Reservations:
+      description: Une réservation
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        number_of_people:
+          type: integer
+          example: 3
+        checkin:
+          type: string
+          format: date-time
+        checkout:
+          type: string
+          format: date-time
+        has_options:
+            type: boolean
+            example: false
+        price:
+            type: number
+            format: float
+        stay_type:
+          type: string
+          enum:
+            - "pro"
+            - "personal"
+        status:
+          type: string
+          enum:
+            - "cancelled"
+            - "terminated"
+            - "no-show"
+            - "validated"
 
     Options:
       description: Options disponibles à la réservation.
@@ -1143,7 +1335,7 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: 'http://example.com/oauth/token'
+          tokenUrl: 'https://example.com/oauth/token'
           scopes:
             write: allows modifying resources
             read: allows reading resources
