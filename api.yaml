@@ -159,7 +159,8 @@ paths:
             application/json:
               schema:
                 type: array
-                $ref: '#/components/schemas/PresentationVideo'
+                items:
+                  $ref: '#/components/schemas/PresentationVideo'
         '404':
           description: 'Ressource non trouvée.'
 
@@ -540,8 +541,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'Erreur dans la requête.'
+        '404':
+          description: 'Ressource non trouvée.'
 
-  /home/footer/{slug}:
+  /home/footer/{id}:
     put:
       tags:
         - footer
@@ -552,9 +557,9 @@ paths:
         Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
       parameters:
         - in: path
-          name: slug
+          name: id
           required: true
-          description: Slug du footer à modifier
+          description: Id du footer à modifier
           schema:
             type: integer
       requestBody:
@@ -648,11 +653,10 @@ paths:
                 items:
                   $ref: '#/components/schemas/Options'
 
-  /reservation/options/{id}:
     post:
       tags:
         - options
-      operationId: modifyOptions
+      operationId: createOptions
       summary: Permet de créer une option
       description: >-
         Cette méthode permet de créer une option de réservation.
@@ -662,11 +666,16 @@ paths:
         content:
           multipart/form-data:
             schema:
-              option_name:
-                $ref: '#/components/schemas/Translatable'
-              option_price:
-                type: integer
-                example: 1
+              $ref: '#/components/schemas/Options'
+      responses:
+        '200':
+          description: 'Nouvelle option crée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Options'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
 
     put:
       tags:
@@ -681,11 +690,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              option_name:
-                $ref: '#/components/schemas/Translatable'
-              option_price:
-                type: integer
-                example: 1
+              $ref: '#/components/schemas/Options'
       responses:
         '200':
           description: 'Avantage mis à jour.'
@@ -717,7 +722,7 @@ paths:
               $ref: '#/components/schemas/Customers'
       responses:
         '200':
-          description: 'Nouveau compte utilisateur crée avec succès.'
+          description: 'Nouveau compte utilisateur créé avec succès.'
           content:
             application/json:
               schema:
@@ -787,7 +792,7 @@ paths:
     delete:
       tags:
         - customers
-      operationId: modifyCustomer
+      operationId: deleteCustomer
       summary: Supprimer les informations personnelles d'un utilisateur
       description: >-
         Cette méthode permet de supprimer les informations d'un client ou prospect de l'hôtel.
@@ -813,6 +818,119 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
+  /admin/create :
+    post:
+      tags:
+        - admins
+      operationId: createAdmin
+      summary: Créer un nouveau compte administrateur
+      description: >-
+        Cette méthode permet de créer un compte pour qu'un employé de l'hôtel ait les droits d'administration sur le 
+        site.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Admin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Admin'
+      responses:
+        '200':
+          description: 'Nouveau compte administrateur créé avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+  /admin/{id} :
+    get:
+      tags:
+        - admins
+      operationId: getAdmin
+      summary: Récupérer les informations d'un admin.
+      description: >-
+        Cette méthode permet de récupérer toutes les informations d'un employé de l'hôtel ayant un compte admin.
+        Elle prend l'id de l'admin en paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de l'admin à récupérer.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Informations admin renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+
+    put:
+      tags:
+        - admin
+      operationId: modifyAdmin
+      summary: Modifier les informations d'un compte administrateur
+      description: >-
+        Cette méthode permet de modifier les informations d'un compte administrateur précis.
+        Elle prend l'id de l'admin en paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+            example: 2
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Admin'
+      responses:
+        '200':
+          description: Informations du compte administrateur modifiées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: "Le compte administrateur demandé n'a pas été non trouvée."
+
+    delete:
+      tags:
+         - admin
+      operationId: deleteAdmin
+      summary: Supprimer le compte d'un administrateur et les informations liées.
+      description: >-
+        Cette méthode permet de supprimer les informations d'un compte admin. Elle prend l'id de l'administrateur en 
+        paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de l'admin à récupérer.
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Compte administrateur supprimés avec succès.
+          content:
+            application/json:
+               schema:
+                $ref: '#/components/schemas/Admin'
+        '400':
+           description: 'La syntaxe de la requête est erronée.'
+        '404':
+           description: 'Ressource non trouvée.'
 
 components:
   schemas:
@@ -981,20 +1099,18 @@ components:
         id:
           type: integer
           example: 1
-        column:
+        column_number:
           type: integer
           enum:
             - 1
             - 2
+          example: 1
         entry_name:
           $ref: '#/components/schemas/Translatable'
         url_redirection:
           type: string
           format: url
           example: 'http://www.url.com/example'
-        slug:
-          type: string
-          example: christmas-footer
 
     SocialMedia:
       description: Icônes et liens des réseaux sociaux.
@@ -1014,7 +1130,6 @@ components:
     Options:
       description: Options disponibles à la réservation.
       type: object
-
       properties:
         id:
           type: integer
@@ -1022,8 +1137,8 @@ components:
         option_name:
           $ref: '#/components/schemas/Translatable'
         option_price:
-          type: float
-
+          type: number
+          example: 30.5
     Customers:
       description : >-
         Modèle contenant les propriétés des Customers. Le terme "Customers" a été choisi pour être plus proche de la logique métier d'un hôtel.
@@ -1097,3 +1212,4 @@ components:
           scopes:
             write: allows modifying resources
             read: allows reading resources
+
