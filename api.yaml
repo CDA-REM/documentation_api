@@ -6,16 +6,16 @@ info:
   version: "1.0.0"
   title: "API sécurisée pour l'administration  du site de l'hôtel Artichaut"
   description: >-
-    Possibilité de modifier, supprimer ou créer de nouveaux contenus sur la landing page de l'hôtel Artichaut.
+    Possibilité de modifier, supprimer ou créer de nouveaux contenus sur la landing page de l'hôtel Arth.
     Les requêtes peuvent être faites à partir de [Postman](https://www.postman.com).  
     Tous les champs traductibles peuvent être entré avec en clé le nom du champ, et entre crochet le nom de la langue, par exemple
     `title[fr]` et `title[en]`.
   contact:
     # Un commentaire
-    name: Team name 
+    name: Team name
     email: you@your-company.com
 
-tags: 
+tags:
   - name: hero
     description: Administration de la section Hero
   - name: promotional_banner
@@ -36,6 +36,8 @@ tags:
     description: Administration des réseaux sociaux
   - name: options
     description: Administration des options de réservations possibles
+  - name: reservations
+    description: Informations de réservation
 
 paths:
   /home/hero:
@@ -102,7 +104,7 @@ paths:
       tags:
         - promotional_banner
       operationId: getPromotionalBanner
-      summary: Renvoie les propriétés de la banière promotionnelle.
+      summary: Renvoie les propriétés de la bannière promotionnelle.
       description: Cette méthode ne prend aucun paramètre et permet de consulter les champs de la bannière promotionnelle.
       responses:
         '200':
@@ -125,8 +127,8 @@ paths:
           required: true
           description: Slug de la bannière à modifier
           schema:
-            type: integer
-            example: 10
+            type: string
+            example: default_banner
       requestBody:
         required: true
         content:
@@ -149,28 +151,56 @@ paths:
     get:
       tags:
         - presentation_video
+      operationId: getVideo
       summary: Récupération des éléments de la section vidéo
-      description: >-
-        Liste des sections vidéo
+      description: Cette méthode ne prend aucun paramètre et retourne les propriétés de la section video.
       responses:
         '200':
-          description: Section vidéo affichées
+          description: Section vidéo affichée
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PresentationVideo'
-                
-  /home/presentation_video/{id}:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PresentationVideo'
+        '404':
+          description: 'Ressource non trouvée.'
+
+  /home/presentation_video/{slug}:
     post:
       tags:
         - presentation_video
-      summary: Création d'une nouvelle section Vidéo
+      operationId: updateVideo
+      summary: Modification d'une section vidéo spécifique
+      description: >-
+        Cette méthode permet de modifier les propriétés de la section video.
+        Elle est utilisée à la place d'une méthode put afin de prendre en charge le média vidéo. 
+        Elle prend un paramètre, le slug, et met à jour l'enregistrement correspondant.
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          description: Slug de la section vidéo à modifier
+          schema:
+            type: string
+            example: default-presentation_video
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PresentationVideo'
+              type: object
+              properties:
+                video_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+                video_alt:
+                  $ref: '#/components/schemas/Translatable'
       responses:
         '200':
           description: 'La section vidéo a bien été modifiée.'
@@ -302,23 +332,58 @@ paths:
       tags:
         - reviews
       operationId: getReviews
-      summary: Récupère les avis des visiteurs de l'hôtel.
-      description: Cette section retourne tous les avis.
+      summary: Récupère l'ensemble des avis des visiteurs de l'hôtel.
+      description: >-
+        Cette route permet de récupérer l'ensemble des avis utilisateurs.
+        La requête ne prend aucun paramètre. La réponse retourne les avis des utilisateurs.
       responses:
         '200':
           description: Avis renvoyés avec succès.
           content:
             application/json:
               schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reviews'
+        '404':
+          description: 'Ressource non trouvée.'
+    post:
+      tags:
+        - reviews
+      operationId: createReview
+      summary: Crée un avis utilisateur
+      description: >-
+        Cette méthode permet aux clients ayant séjourné à l'hôtel de laisser un avis.
+        Le body de la requête doit contenir les toutes les informations nécessaires à la création d'un avis.
+        Par défaut, la propriété is_displayed a pour valeur "0" correspondant à "false".
+        L'administrateur pourra la modifier afin de publier l'avis sur la landing page.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reviews'
+      responses:
+        '200':
+          description: 'Avis client enregistré'
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/Reviews'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
 
   /home/reviews/{id}:
     put:
       tags:
         - reviews
-      operationId: modifyReviews
-      summary: Permet de modifier le champ isDisplayed. L'avis sera affiché si isDisplayed a pour valeur `true`.
-      description: Cette section permet de modifier la valeur isDisplayed d'un avis en true ou false.
+      operationId: modifyReview
+      summary: Modifier un avis client.
+      description: >-
+        Cette méthode permet à l'administrateur de modifier la valeur isDisplayed : 0 ou 1.
+        L'avis sera affiché si isDisplayed a pour valeur 1, correspondant à "true".
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé. Seul la propriété 
+        is_displayed peut-être modifiée.
       parameters:
         - in: path
           name: id
@@ -327,6 +392,15 @@ paths:
           schema:
             type: integer
             example: 10
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                is_displayed:
+                  type: boolean
+                  example: false
       responses:
         '200':
           description: Avis modifié avec succès.
@@ -336,32 +410,6 @@ paths:
                 $ref: '#/components/schemas/Reviews'
         '400':
           description: 'Erreur dans la requête.'
-        '404':
-          description: 'Ressource non trouvée.'
-
-    post:
-      tags:
-        - reviews
-      operationId: createReview
-      summary: Permet de créer une nouvelle Review
-      description: >-
-        Cette méthode crée une nouvelle Review.
-        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Advantages'
-      responses:
-        '200':
-          description: 'Avantage mis à jour.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Reviews'
-        '400':
-          description: 'La syntaxe de la requête est erronée.'
         '404':
           description: 'Ressource non trouvée.'
 
@@ -380,64 +428,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/News'
 
-  /home/news/{id}:
     post:
       tags:
         - news
-      operationId: postNews
+      operationId: updateNews
       summary: Permet de créer une toute nouvelle actualité.
       description: Cette méthode permet de créer une nouvelle actualité en passant tous les champs du modèle actualité.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id de la news à modifier
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          content:
-            multipart/form-data:
-              schema:
-                type: object
-                properties:
-                  media_url:
-                    type: string
-                    format: binary
-                  title:
-                    $ref: '#/components/schemas/Translatable'
-                  description:
-                    $ref: '#/components/schemas/Translatable'
-                  media_alt:
-                    $ref: '#/components/schemas/Translatable'
-      responses:
-        '200':
-          description: 'Actualité créée.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/News'
-        '400':
-          description: 'Erreur dans la requête.'
-        '404':
-          description: 'Ressource non trouvée.'
-
-    put:
-      tags:
-        - news
-      operationId: updateNews
-      summary: Modifie une actualité.
-      description: >-
-        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
-        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id de la news à modifier
-          schema:
-            type: integer
       requestBody:
         content:
           multipart/form-data:
@@ -465,6 +461,50 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
+  /home/news/{id}:
+    post:
+      tags:
+        - news
+      operationId: postNews
+      summary: Modifie une actualité.
+      description: >-
+        Cette méthode prend un paramètre (numéro) et met à jour le rang qui correspond à cet ID. 
+        Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de la news à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                media_url:
+                  type: string
+                  format: binary
+                title:
+                  $ref: '#/components/schemas/Translatable'
+                description:
+                  $ref: '#/components/schemas/Translatable'
+                media_alt:
+                  $ref: '#/components/schemas/Translatable'
+      responses:
+        '200':
+          description: 'Actualité créée.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+        '400':
+          description: 'Erreur dans la requête.'
+        '404':
+          description: 'Ressource non trouvée.'
+
 
   /home/footer:
     get:
@@ -480,8 +520,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'Erreur dans la requête.'
+        '404':
+          description: 'Ressource non trouvée.'
 
-  /home/footer/{slug}:
+  /home/footer/{id}:
     put:
       tags:
         - footer
@@ -492,9 +536,9 @@ paths:
         Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
       parameters:
         - in: path
-          name: slug
+          name: id
           required: true
-          description: Slug de l'avantage à modifier
+          description: Id du footer à modifier
           schema:
             type: integer
       requestBody:
@@ -574,7 +618,7 @@ paths:
 
   /reservation/options:
     get:
-      tag:
+      tags:
         - options
       operationId: getAllOptions
       summary: Récupère toutes les options disponibles à la réservation.
@@ -588,11 +632,10 @@ paths:
                 items:
                   $ref: '#/components/schemas/Options'
 
-  /reservation/options/{id}:
     post:
       tags:
         - options
-      operationId: modifyOptions
+      operationId: createOptions
       summary: Permet de créer une option
       description: >-
         Cette méthode permet de créer une option de réservation.
@@ -602,11 +645,17 @@ paths:
         content:
           multipart/form-data:
             schema:
-              option_name:
-                $ref: '#/components/schemas/Translatable'
-              option_price:
-                type: integer
-                example: 1
+              $ref: '#/components/schemas/Options'
+      responses:
+        '200':
+          description: 'Nouvelle option crée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Options'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
     put:
       tags:
         - options
@@ -620,13 +669,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              option_name:
-                $ref: '#/components/schemas/Translatable'
-              option_price:
-                type: integer
-                example: 1
-
-
+              $ref: '#/components/schemas/Options'
       responses:
         '200':
           description: 'Avantage mis à jour.'
@@ -634,6 +677,277 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Options'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+#  /reservations/availability:
+#    get:
+#      tags:
+#        - reservations
+#      operationId: checkAvailability
+#      summary : Vérifie la disponibilité d'une réservation
+#      description : Vérifie la disponibilité d'une réservation en fonction des dates et des nombres de chambres demandée.
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              properties:
+#                check-in:
+#                  required: true
+#                  type: string
+#                  format: date
+#                  example: "2022-12-06"
+#                check-out:
+#                  properties:
+#                    type: string
+#                    format: date
+#                    example: "2022-12-06"
+#                number_of_rooms:
+#                  type: integer
+#                  example: 2
+#      responses:
+#        '200':
+#          description: 'Requête passée avec succès'
+#          content:
+#            application/json:
+#              schema:
+#                properties:
+#                  availability:
+#                    type: boolean
+#        '400':
+#            description: 'Manque de paramètres'
+
+  /reservations:
+    post:
+      tags:
+        - reservations
+      operationId: createReservation
+      summary: Créer une nouvelle réservation
+      description: >-
+        Cette méthode permet de créer une nouvelle réservation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservations'
+      responses:
+        '200':
+          description: 'Nouvelle réservation crée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+  /reservations/{id}:
+    get:
+      tags:
+        - reservations
+      operationId: updateReservation
+      summary: Modifie le statut d'une réservation.
+      description: >-
+        Cette méthode permet de modifier le statut d'une réservation uniquement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de la réservation à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservations'
+      responses:
+        '200':
+          description: 'Réservation modifiée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+    put:
+      tags:
+        - reservations
+      operationId: updateReservation
+      summary: Modifie le statut d'une réservation.
+      description: >-
+        Cette méthode permet de modifier le statut d'une réservation uniquement.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id de la réservation à modifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - "cancelled"
+                    - "terminated"
+                    - "no-show"
+                    - "validated"
+      responses:
+        '200':
+          description: 'Réservation modifiée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+
+  /reservations/user/{user_id}:
+    get:
+      tags:
+        - reservations
+      operationId: getReservationHistory
+      summary: Permet de voir l'historique de réservation d'un utilisateur.
+      description: >-
+        Cette méthode permet de consulter l'historique de réservation d'un utilisateur.
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          description: Id du User dont on veut l'historique
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Réservation modifiée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: "La ressource n'existe pas."
+
+  /users/create:
+    post:
+      tags:
+        - users
+      operationId: createCustomer
+      summary: Créer un nouveau compte
+      description: >-
+        Cette méthode permet de créer un compte pour un nouveau client et d'enregistrer ses informations personnelles.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '200':
+          description: 'Nouveau compte utilisateur crée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+  /users/{id}:
+    get:
+      tags:
+        - users
+      operationId: getUser
+      summary: Récupérer les informations d'un client de l'hôtel.
+      description: >-
+        Cette méthode permet de récupérer toutes les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Informations client renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+
+    put:
+      tags:
+        - users
+      operationId: modifyUser
+      summary: Modifier les informations personnelles d'un utilisateur
+      description: >-
+        Cette méthode permet de modifier les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre. Tous les champs doivent être remplis sauf ceux relatifs à 
+        l'employeur pour les clients qui voyagent à titre personnel.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+            example: 2
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '200':
+          description: Informations client modifiées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+    delete:
+      tags:
+        - users
+      operationId: deleteUser
+      summary: Supprimer les informations personnelles d'un utilisateur
+      description: >-
+        Cette méthode permet de supprimer les informations d'un client ou prospect de l'hôtel.
+        Elle prend l'id du customer en paramètre. Tous les champs doivent être remplis sauf ceux relatifs à 
+        l'employeur pour les clients qui voyagent à titre personnel.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du client à récupérer.
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Informations client supprimées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
@@ -657,7 +971,7 @@ components:
     Hero:
       description: Modèle contenant les éléments du hero
       type: object
-       
+
       properties:
         id:
           type: integer
@@ -675,7 +989,7 @@ components:
           example: path/to/the/file
         media_alt:
           $ref: '#/components/schemas/Translatable'
-        
+
     PromotionalBanner:
       description: Modèle contenant les éléments de la bannière promotionnelle.
       type: object
@@ -693,27 +1007,24 @@ components:
     PresentationVideo:
       description: Modèle contenant les éléments de la section Vidéo
       type: object
-       
+
       properties:
         id:
           type: integer
           example: 4
+        slug:
+          format: string
+          example: default-hero
+        title:
+          $ref: '#/components/schemas/Translatable'
+        description:
+          $ref: '#/components/schemas/Translatable'
         video_url:
           type: string
           format: url
-          example: 'https://www.hotelArtichaud.com/video1'
-        title:
-          type: string
-          example: Titre de ma vidéo
-        title_english:
-          type: string
-          example: The title in english
-        description:
-          type: string
-          example: La description de la vidéo
-        description_english:
-          type: string
-          example: The description in english
+          example: path/to/the/file
+        media_alt:
+          $ref: '#/components/schemas/Translatable'
 
     RoomCategories:
       description: Propriétés des catégories de chambres dans la base de donnée, avec l'url de leur image.
@@ -735,7 +1046,7 @@ components:
 
 
     Advantages:
-      description: Modèle contenant les éléments de la section Avantages 
+      description: Modèle contenant les éléments de la section Avantages
       type: object
 
       properties:
@@ -750,7 +1061,7 @@ components:
           $ref: '#/components/schemas/Translatable'
         description:
           $ref: '#/components/schemas/Translatable'
-      
+
     Reviews:
       description: Modèle contenant les éléments d'un avis.
       type: object
@@ -766,8 +1077,10 @@ components:
           example: 14
         rating:
           type: number
-          format: float
-          example: 3.5
+          format: integer
+          minimum: 1
+          maximum: 5
+          example: 5
         body:
           type: string
           example: "Voilà mon avis"
@@ -808,20 +1121,18 @@ components:
         id:
           type: integer
           example: 1
-        column:
+        column_number:
           type: integer
           enum:
             - 1
             - 2
+          example: 1
         entry_name:
           $ref: '#/components/schemas/Translatable'
         url_redirection:
           type: string
           format: url
-          example: 'http://www.url.com/example'
-        slug:
-          type: string
-          example: christmas-footer
+          example: 'https://www.url.com/example'
 
     SocialMedia:
       description: Icônes et liens des réseaux sociaux.
@@ -838,18 +1149,97 @@ components:
           type: string
           example: 'https://www.facebook.com/hotelarth'
 
-    Options:
-        description: Options disponibles à la réservation.
-        type: object
+    Reservations:
+      description: Une réservation
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        number_of_people:
+          type: integer
+          example: 3
+        checkin:
+          type: string
+          format: date-time
+        checkout:
+          type: string
+          format: date-time
+        has_options:
+            type: boolean
+            example: false
+        price:
+            type: number
+            format: float
+        stay_type:
+          type: string
+          enum:
+            - "pro"
+            - "personal"
+        status:
+          type: string
+          enum:
+            - "cancelled"
+            - "terminated"
+            - "no-show"
+            - "validated"
 
-        properties:
-          id:
-            type: integer
-            example: 1
-          option_name:
-            $ref: '#/components/schemas/Translatable'
-          option_price:
-            type: float
+    Options:
+      description: Options disponibles à la réservation.
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        option_name:
+          $ref: '#/components/schemas/Translatable'
+        option_price:
+          type: number
+          example: 30.5
+
+
+    Users:
+      description : >-
+        Modèle contenant les propriétés des Users.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 16
+        gender:
+          type: string
+          example: "Monsieur"
+        firstname:
+          type: string
+          example: "Alain"
+        lastname:
+          type: string
+          example: "Deloin"
+        email:
+          type: string
+          format: email
+          example: "a.deloin@example.fr"
+        phone:
+          type: string
+          example: "0493565044"
+        avatar_url:
+          type: string
+          example: "assets/avatars/avatar1.png"
+        password:
+          type: string
+          example: d3vin3_mon_p4ssw0rD
+        personal_address:
+          type: string
+          example:
+        enterprise_name:
+          type: string
+          example: "Art' Devlopment"
+        professional_address:
+          type: string
+          example: "4001, boulevard du middleware, 74000 Annecy"
 
 
   securitySchemes:
@@ -857,7 +1247,7 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: 'http://example.com/oauth/token'
+          tokenUrl: 'https://example.com/oauth/token'
           scopes:
             write: allows modifying resources
             read: allows reading resources
