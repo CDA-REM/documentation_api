@@ -361,29 +361,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Reviews'
-              type: object
 
-              properties:
-                customer_id:
-                  type: integer
-                  example: 3
-                rating:
-                  type: integer
-                  minimum: 1
-                  maximum: 5
-                  example: 5
-                title:
-                  type: string
-                  example: Un merveilleux séjour
-                body:
-                  type: string
-                  example: "Nous avons passé un excellent séjour à l'hôtel Arth"
-                is_displayed:
-                  type: boolean
-                  example: false
-                created_at:
-                  type: timestamp
-                  example: 10/11/2021
       responses:
         '200':
           description: 'Avis client enregistré'
@@ -528,6 +506,30 @@ paths:
 
 
   /home/footer:
+    post:
+      tags:
+        - footer
+      operationId: createFooter
+      summary: Créer une entrée du footer.
+      description: >-
+        Cette méthode ne prend pas de paramètre et permet de créer un nouveau lien dans le footer.
+        Attention, le rang doit contenir tous les champs.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Footer'
+      responses:
+        '200':
+          description: 'Nouvelle entrée du footer créée.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
     get:
       tags:
         - footer
@@ -545,6 +547,7 @@ paths:
           description: 'Erreur dans la requête.'
         '404':
           description: 'Ressource non trouvée.'
+
 
   /home/footer/{id}:
     put:
@@ -575,6 +578,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Footer'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+    delete:
+      tags:
+        - footer
+      operationId: deleteFooter
+      summary: Supprimer un lien du footer.
+      description: >-
+        Cette méthode permet de supprimer un lien du footer.
+        Elle prend l'id du lien à supprimer en paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Id du lien à supprimer.
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Le lien a été supprimé avec succès du footer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
@@ -703,71 +734,72 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /customers/create:
+  /users/create:
     post:
       tags:
-        - customers
-      operationId: createCustomer
+        - users
+      operationId: createUser
       summary: Créer un nouveau compte
       description: >-
-        Cette méthode permet de créer un compte pour un nouveau client et d'enregistrer ses informations personnelles.
+        Cette méthode permet de créer un compte pour un nouvel utilisateur et d'enregistrer ses informations 
+        personnelles.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customers'
+              $ref: '#/components/schemas/Users'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Customers'
+              $ref: '#/components/schemas/Users'
       responses:
         '200':
           description: 'Nouveau compte utilisateur créé avec succès.'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customers'
+                $ref: '#/components/schemas/Users'
         '400':
           description: 'La syntaxe de la requête est erronée.'
 
-  /customers/{id}:
+  /users/{id}:
     get:
       tags:
-        - customers
-      operationId: getCustomer
-      summary: Récupérer les informations d'un client de l'hôtel.
+        - users
+      operationId: getUser
+      summary: Récupérer les informations d'un utilisateur.
       description: >-
-        Cette méthode permet de récupérer toutes les informations d'un client ou prospect de l'hôtel.
-        Elle prend l'id du customer en paramètre.
+        Cette méthode permet de récupérer toutes les informations d'un utilisateur de l'application.
+        Elle prend l'id de l'utilisateur en paramètre.
       parameters:
         - in: path
           name: id
           required: true
-          description: Id du client à récupérer.
+          description: Id de l'utilisateur à récupérer.
           schema:
             type: integer
       responses:
         '200':
-          description: Informations client renvoyées avec succès.
+          description: Informations renvoyées avec succès.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customers'
+                $ref: '#/components/schemas/Users'
 
     put:
       tags:
-        - customers
-      operationId: modifyCustomer
-      summary: Modifier les informations personnelles d'un utilisateur
+        - users
+      operationId: modifyUser
+      summary: Modifier les informations personnelles d'un utilisateur.
       description: >-
-        Cette méthode permet de modifier les informations d'un client ou prospect de l'hôtel.
+        Cette méthode permet de modifier les informations d'un utilisateur de l'application.
         Elle prend l'id du customer en paramètre. Tous les champs doivent être remplis sauf ceux relatifs à 
-        l'employeur pour les clients qui voyagent à titre personnel.
+        l'employeur qui sont nullables.
       parameters:
         - in: path
           name: id
           required: true
-          description: Id du client à récupérer.
+          description: Id de l'utilisateur à récupérer.
           schema:
             type: integer
             example: 2
@@ -776,14 +808,14 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Customers'
+              $ref: '#/components/schemas/Users'
       responses:
         '200':
-          description: Informations client modifiées avec succès.
+          description: Informations utilisateur modifiées avec succès.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customers'
+                $ref: '#/components/schemas/Users'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
@@ -791,146 +823,67 @@ paths:
 
     delete:
       tags:
-        - customers
-      operationId: deleteCustomer
-      summary: Supprimer les informations personnelles d'un utilisateur
+        - users
+      operationId: deleteUser
+      summary: Supprimer les informations personnelles d'un utilisateur.
       description: >-
-        Cette méthode permet de supprimer les informations d'un client ou prospect de l'hôtel.
-        Elle prend l'id du customer en paramètre. Tous les champs doivent être remplis sauf ceux relatifs à 
-        l'employeur pour les clients qui voyagent à titre personnel.
+        Cette méthode permet de supprimer les informations d'un utilisateur.
+        Elle prend l'id de utilisateur en paramètre.
       parameters:
         - in: path
           name: id
           required: true
-          description: Id du client à récupérer.
+          description: Id de utilisateur à récupérer.
           schema:
             type: integer
             example: 2
       responses:
         '200':
-          description: Informations client supprimées avec succès.
+          description: Informations utilisateur supprimées avec succès.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customers'
+                $ref: '#/components/schemas/Users'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: 'Ressource non trouvée.'
 
-  /admin/create :
+  /users/login:
     post:
       tags:
-        - admins
-      operationId: createAdmin
-      summary: Créer un nouveau compte administrateur
+        - users
+      operationId: logUser
+      summary: Connecter un utilisateur
       description: >-
-        Cette méthode permet de créer un compte pour qu'un employé de l'hôtel ait les droits d'administration sur le 
-        site.
+        Cette méthode permet à un utilisateur de l'application de se connecter.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Admin'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Admin'
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: 'e.green@example.com'
+                password:
+                  type: string
+                  format: password
+                  example: 'MotDePassSecret'
       responses:
         '200':
-          description: 'Nouveau compte administrateur créé avec succès.'
+          description: 'Connexion réussie'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Admin'
+                $ref: '#/components/schemas/Users'
         '400':
           description: 'La syntaxe de la requête est erronée.'
+        '401':
+          description: 'Accès refusé vérifier les identifiants utilisés.'
 
-  /admin/{id} :
-    get:
-      tags:
-        - admins
-      operationId: getAdmin
-      summary: Récupérer les informations d'un admin.
-      description: >-
-        Cette méthode permet de récupérer toutes les informations d'un employé de l'hôtel ayant un compte admin.
-        Elle prend l'id de l'admin en paramètre.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id de l'admin à récupérer.
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Informations admin renvoyées avec succès.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Admin'
-
-    put:
-      tags:
-        - admin
-      operationId: modifyAdmin
-      summary: Modifier les informations d'un compte administrateur
-      description: >-
-        Cette méthode permet de modifier les informations d'un compte administrateur précis.
-        Elle prend l'id de l'admin en paramètre.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id du client à récupérer.
-          schema:
-            type: integer
-            example: 2
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Admin'
-      responses:
-        '200':
-          description: Informations du compte administrateur modifiées avec succès.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Admin'
-        '400':
-          description: 'La syntaxe de la requête est erronée.'
-        '404':
-          description: "Le compte administrateur demandé n'a pas été non trouvée."
-
-    delete:
-      tags:
-         - admin
-      operationId: deleteAdmin
-      summary: Supprimer le compte d'un administrateur et les informations liées.
-      description: >-
-        Cette méthode permet de supprimer les informations d'un compte admin. Elle prend l'id de l'administrateur en 
-        paramètre.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          description: Id de l'admin à récupérer.
-          schema:
-            type: integer
-            example: 2
-      responses:
-        '200':
-          description: Compte administrateur supprimés avec succès.
-          content:
-            application/json:
-               schema:
-                $ref: '#/components/schemas/Admin'
-        '400':
-           description: 'La syntaxe de la requête est erronée.'
-        '404':
-           description: 'Ressource non trouvée.'
 
 components:
   schemas:
@@ -1021,7 +974,6 @@ components:
           $ref: '#/components/schemas/Translatable'
         media_alt:
           $ref: '#/components/schemas/Translatable'
-
 
     Advantages:
       description: Modèle contenant les éléments de la section Avantages
@@ -1139,9 +1091,10 @@ components:
         option_price:
           type: number
           example: 30.5
-    Customers:
+
+    Users:
       description : >-
-        Modèle contenant les propriétés des Customers. Le terme "Customers" a été choisi pour être plus proche de la logique métier d'un hôtel.
+        Modèle contenant les propriétés des utilisateurs.
       type: object
 
       properties:
@@ -1179,28 +1132,12 @@ components:
         professional_address:
           type: string
           example: "4001, boulevard du middleware, 74000 Annecy"
-
-    Admin:
-      description: Modèle contenant les propriétés des Administrateurs.
-      type: object
-
-      properties:
-        id:
-          type: integer
-          example: 8
-        username:
+        role:
           type: string
-          example: "Manager1"
-        firstname:
-          type: string
-          example: "Jean"
-        lastname:
-          type: string
-          example: "Bonnet"
-        password:
-          type: string
-          format: password
-          example: "S3cr3t_P4ssworD"
+          enum:
+            - customer
+            - admin
+          example: "admin"
 
 
   securitySchemes:
