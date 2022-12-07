@@ -38,6 +38,8 @@ tags:
     description: Administration des options de réservations possibles
   - name: reservations
     description: Informations de réservation
+  - name: users
+    description: Informations des utilisateurs
 
 paths:
   /home/hero:
@@ -210,7 +212,34 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: 'Ressource non trouvée.'
-
+    get:
+      tags:
+        - presentation_video
+      operationId: getVideo
+      summary: Récupérer une section vidéo spécifique
+      description: >-
+        Cette méthode permet de récupérer les propriétés d'une section vidéo spécifique.
+        Elle prend un paramètre, le slug.
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          description: Slug de la section vidéo à récupérer
+          schema:
+            type: string
+            example: default-presentation_video
+      responses:
+        '200':
+          description: 'La section vidéo a bien été récupérée.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresentationVideo'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+          
   /home/room_category:
     get:
       tags:
@@ -603,7 +632,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Users'
+                $ref: '#/components/schemas/Footer'
         '400':
           description: 'La syntaxe de la requête est erronée.'
         '404':
