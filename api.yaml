@@ -1003,7 +1003,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /users/login:
+  /login:
     post:
       tags:
         - users
