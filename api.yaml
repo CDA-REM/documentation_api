@@ -40,9 +40,11 @@ tags:
     description: Informations de réservation
   - name: users
     description: Informations des utilisateurs
+  - name: rooms
+    description: Information des chambres
 
 paths:
-  /home/hero:
+  /api/home/hero:
     get:
       tags:
         - hero
@@ -59,7 +61,7 @@ paths:
                   $ref: '#/components/schemas/Hero'
 
 
-  /home/hero/{id}:
+  /api/home/hero/{id}:
     post:
       tags:
         - hero
@@ -101,7 +103,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/promotional_banner:
+  /api/home/promotional_banner:
     get:
       tags:
         - promotional_banner
@@ -116,7 +118,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
 
-  /home/promotional_banner/{id}:
+  /api/home/promotional_banner/{id}:
     put:
       tags:
         - promotional_banner
@@ -149,7 +151,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/presentation_video:
+  /api/home/presentation_video:
     get:
       tags:
         - presentation_video
@@ -166,7 +168,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/presentation_video/{id}:
+  /api/home/presentation_video/{id}:
     post:
       tags:
         - presentation_video
@@ -240,7 +242,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
           
-  /home/room_category:
+  /api/home/room_category:
     get:
       tags:
         - room_categories
@@ -257,7 +259,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/RoomCategories'
 
-  /home/room_category/{id}:
+  /api/home/room_category/{id}:
     post:
       tags:
         - room_categories
@@ -298,7 +300,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/advantages:
+  /api/home/advantages:
     get:
       tags:
         - advantages
@@ -313,7 +315,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Advantages'
 
-  /home/advantages/{id}:
+  /api/home/advantages/{id}:
     post:
       tags:
         - advantages
@@ -354,7 +356,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/reviews:
+  /api/home/reviews:
     get:
       tags:
         - reviews
@@ -400,7 +402,7 @@ paths:
         '400':
           description: 'La syntaxe de la requête est erronée.'
 
-  /home/reviews/{id}:
+  /api/home/reviews/{id}:
     put:
       tags:
         - reviews
@@ -440,7 +442,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/news:
+  /api/home/news:
     get:
       tags:
         - news
@@ -488,7 +490,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/news/{id}:
+  /api/home/news/{id}:
     post:
       tags:
         - news
@@ -533,7 +535,7 @@ paths:
           description: 'Ressource non trouvée.'
 
 
-  /home/footer:
+  /api/home/footer:
     post:
       tags:
         - footer
@@ -576,7 +578,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/footer/{id}:
+  /api/home/footer/{id}:
     put:
       tags:
         - footer
@@ -638,7 +640,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/social_medias:
+  /api/home/social_medias:
     get:
       tags:
         - social_media
@@ -653,7 +655,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SocialMedia'
 
-  /home/social_medias/{id}:
+  /api/home/social_medias/{id}:
     put:
       tags:
         - social_media
@@ -695,7 +697,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /reservation/options:
+  /api/reservation/options:
     get:
       tags:
         - options
@@ -762,7 +764,7 @@ paths:
           description: 'Ressource non trouvée.'
 
 
-#  /reservations/availability:
+#  /api/reservations/availability:
 #    get:
 #      tags:
 #        - reservations
@@ -800,7 +802,7 @@ paths:
 #        '400':
 #            description: 'Manque de paramètres'
 
-  /reservations:
+  /api/reservations:
     post:
       tags:
         - reservations
@@ -824,7 +826,7 @@ paths:
         '400':
           description: 'La syntaxe de la requête est erronée.'
 
-  /reservations/{id}:
+  /api/reservations/{id}:
     get:
       tags:
         - reservations
@@ -891,7 +893,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
 
 
-  /reservations/user/{user_id}:
+  /api/reservations/user/{user_id}:
     get:
       tags:
         - reservations
@@ -917,7 +919,8 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: "La ressource n'existe pas."
-  /users/create:
+
+  /api/users:
     post:
       tags:
         - users
@@ -945,7 +948,7 @@ paths:
         '400':
           description: 'La syntaxe de la requête est erronée.'
 
-  /users/{id}:
+  /api/users/{id}:
     get:
       tags:
         - users
@@ -1016,7 +1019,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: Id de utilisateur à récupérer.
+          description: Id de utilisateur à supprimer.
           schema:
             type: integer
             example: 2
@@ -1032,7 +1035,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /login:
+  /api/login:
     post:
       tags:
         - users
@@ -1066,6 +1069,119 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '401':
           description: 'Accès refusé vérifier les identifiants utilisés.'
+
+  /api/rooms:
+    post:
+      tags:
+        - rooms
+      operationId: createRoom
+      summary: Créer une nouvelle chambre
+      description: >-
+        Cette méthode permet de créer une nouvelle chambre.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rooms'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Rooms'
+      responses:
+        '200':
+          description: 'Nouvelle chambre créée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+  /api/rooms/{room_number}:
+    get:
+      tags:
+        - rooms
+      operationId: getRoom
+      summary: Récupérer les informations d'une chambre.
+      description: >-
+        Cette méthode permet de récupérer toutes les informations d'une chambre.
+        Elle prend le numéro de la chambre en paramètre.
+      parameters:
+        - in: path
+          name: room_number
+          required: true
+          description: Numéro de la chambre à récupérer.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Informations renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+
+    put:
+      tags:
+        - rooms
+      operationId: modifyRoom
+      summary: Modifier les informations d'une chambre.
+      description: >-
+        Cette méthode permet de modifier les informations d'une chambre.
+        Elle prend le numéro de la chambre en paramètre. Tous les champs doivent être remplis.
+      parameters:
+        - in: path
+          name: room_number
+          required: true
+          description: Numéro de la chambre à récupérer.
+          schema:
+            type: integer
+            example: 210
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Rooms'
+      responses:
+        '200':
+          description: Informations de la chambre modifiées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+    delete:
+      tags:
+        - rooms
+      operationId: deleteRoom
+      summary: Supprimer les informations d'une chambre.
+      description: >-
+        Cette méthode permet de supprimer les informations d'une chambre.
+        Elle prend le numéro de la chambre en paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Numéro de la chambre à supprimer de la base de données.
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Informations utilisateur supprimées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
 
 components:
   schemas:
@@ -1349,6 +1465,24 @@ components:
             - admin
           example: "admin"
 
+    Rooms:
+      description : >-
+        Modèle contenant les propriétés des chambres.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 10
+        room_number:
+          type: integer
+          example: 105
+        style:
+          type: string
+          example: standard
+        price:
+          type: integer
+          example: 135
 
   securitySchemes:
     password:
