@@ -42,7 +42,7 @@ tags:
     description: Informations des utilisateurs
 
 paths:
-  /home/hero:
+  /api/home/hero:
     get:
       tags:
         - hero
@@ -59,7 +59,7 @@ paths:
                   $ref: '#/components/schemas/Hero'
 
 
-  /home/hero/{id}:
+  /api/home/hero/{id}:
     post:
       tags:
         - hero
@@ -101,7 +101,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/promotional_banner:
+  /api/home/promotional_banner:
     get:
       tags:
         - promotional_banner
@@ -116,7 +116,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
 
-  /home/promotional_banner/{id}:
+  /api/home/promotional_banner/{id}:
     put:
       tags:
         - promotional_banner
@@ -149,7 +149,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/presentation_video:
+  /api/home/presentation_video:
     get:
       tags:
         - presentation_video
@@ -166,7 +166,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/presentation_video/{id}:
+  /api/home/presentation_video/{id}:
     post:
       tags:
         - presentation_video
@@ -240,7 +240,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
           
-  /home/room_category:
+  /api/home/room_category:
     get:
       tags:
         - room_categories
@@ -257,7 +257,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/RoomCategories'
 
-  /home/room_category/{id}:
+  /api/home/room_category/{id}:
     post:
       tags:
         - room_categories
@@ -298,7 +298,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/advantages:
+  /api/home/advantages:
     get:
       tags:
         - advantages
@@ -313,7 +313,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Advantages'
 
-  /home/advantages/{id}:
+  /api/home/advantages/{id}:
     post:
       tags:
         - advantages
@@ -354,7 +354,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/reviews:
+  /api/home/reviews:
     get:
       tags:
         - reviews
@@ -400,7 +400,7 @@ paths:
         '400':
           description: 'La syntaxe de la requête est erronée.'
 
-  /home/reviews/{id}:
+  /api/home/reviews/{id}:
     put:
       tags:
         - reviews
@@ -440,7 +440,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/news:
+  /api/home/news:
     get:
       tags:
         - news
@@ -488,7 +488,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/news/{id}:
+  /api/home/news/{id}:
     post:
       tags:
         - news
@@ -533,7 +533,7 @@ paths:
           description: 'Ressource non trouvée.'
 
 
-  /home/footer:
+  /api/home/footer:
     post:
       tags:
         - footer
@@ -576,7 +576,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/footer/{id}:
+  /api/home/footer/{id}:
     put:
       tags:
         - footer
@@ -638,7 +638,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/social_medias:
+  /api/home/social_medias:
     get:
       tags:
         - social_media
@@ -653,7 +653,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SocialMedia'
 
-  /home/social_medias/{id}:
+  /api/home/social_medias/{id}:
     put:
       tags:
         - social_media
@@ -695,7 +695,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /reservation/options:
+  /api/reservation/options:
     get:
       tags:
         - options
@@ -762,7 +762,7 @@ paths:
           description: 'Ressource non trouvée.'
 
 
-#  /reservations/availability:
+#  /api/reservations/availability:
 #    get:
 #      tags:
 #        - reservations
@@ -800,7 +800,7 @@ paths:
 #        '400':
 #            description: 'Manque de paramètres'
 
-  /reservations:
+  /api/reservations:
     post:
       tags:
         - reservations
@@ -824,7 +824,7 @@ paths:
         '400':
           description: 'La syntaxe de la requête est erronée.'
 
-  /reservations/{id}:
+  /api/reservations/{id}:
     get:
       tags:
         - reservations
@@ -891,7 +891,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
 
 
-  /reservations/user/{user_id}:
+  /api/reservations/user/{user_id}:
     get:
       tags:
         - reservations
@@ -917,7 +917,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: "La ressource n'existe pas."
-  /users/create:
+  /api/users:
     post:
       tags:
         - users
@@ -945,7 +945,7 @@ paths:
         '400':
           description: 'La syntaxe de la requête est erronée.'
 
-  /users/{id}:
+  /api/users/{id}:
     get:
       tags:
         - users
@@ -1032,7 +1032,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /login:
+  /api/login:
     post:
       tags:
         - users
