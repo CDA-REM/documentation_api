@@ -1349,6 +1349,24 @@ components:
             - admin
           example: "admin"
 
+    Rooms:
+      description : >-
+        Modèle contenant les propriétés des chambres.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 10
+        room_number:
+          type: integer
+          example: 105
+        style:
+          type: string
+          example: standard
+        price:
+          type: integer
+          example: 135
 
   securitySchemes:
     password:
