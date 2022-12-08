@@ -40,6 +40,8 @@ tags:
     description: Informations de réservation
   - name: users
     description: Informations des utilisateurs
+  - name: rooms
+    description: Information des chambres
 
 paths:
   /api/home/hero:
@@ -917,6 +919,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: "La ressource n'existe pas."
+
   /api/users:
     post:
       tags:
@@ -1016,7 +1019,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: Id de utilisateur à récupérer.
+          description: Id de utilisateur à supprimer.
           schema:
             type: integer
             example: 2
@@ -1066,6 +1069,119 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '401':
           description: 'Accès refusé vérifier les identifiants utilisés.'
+
+  /api/rooms:
+    post:
+      tags:
+        - rooms
+      operationId: createRoom
+      summary: Créer une nouvelle chambre
+      description: >-
+        Cette méthode permet de créer une nouvelle chambre.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rooms'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Rooms'
+      responses:
+        '200':
+          description: 'Nouvelle chambre créée avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+
+  /api/rooms/{room_number}:
+    get:
+      tags:
+        - rooms
+      operationId: getRoom
+      summary: Récupérer les informations d'une chambre.
+      description: >-
+        Cette méthode permet de récupérer toutes les informations d'une chambre.
+        Elle prend le numéro de la chambre en paramètre.
+      parameters:
+        - in: path
+          name: room_number
+          required: true
+          description: Numéro de la chambre à récupérer.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Informations renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+
+    put:
+      tags:
+        - rooms
+      operationId: modifyRoom
+      summary: Modifier les informations d'une chambre.
+      description: >-
+        Cette méthode permet de modifier les informations d'une chambre.
+        Elle prend le numéro de la chambre en paramètre. Tous les champs doivent être remplis.
+      parameters:
+        - in: path
+          name: room_number
+          required: true
+          description: Numéro de la chambre à récupérer.
+          schema:
+            type: integer
+            example: 210
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Rooms'
+      responses:
+        '200':
+          description: Informations de la chambre modifiées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
+
+    delete:
+      tags:
+        - rooms
+      operationId: deleteRoom
+      summary: Supprimer les informations d'une chambre.
+      description: >-
+        Cette méthode permet de supprimer les informations d'une chambre.
+        Elle prend le numéro de la chambre en paramètre.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Numéro de la chambre à supprimer de la base de données.
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Informations utilisateur supprimées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+        '404':
+          description: 'Ressource non trouvée.'
 
 components:
   schemas:
