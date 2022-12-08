@@ -59,7 +59,7 @@ paths:
                   $ref: '#/components/schemas/Hero'
 
 
-  /home/hero/{slug}:
+  /home/hero/{id}:
     post:
       tags:
         - hero
@@ -67,9 +67,9 @@ paths:
       description: Modification d'un hero spécifique
       parameters:
         - in: path
-          name: slug
+          name: id
           required: true
-          description: Slug du hero à modifier
+          description: Id du hero à modifier
           schema:
             type: string
             example: default-hero
@@ -116,7 +116,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PromotionalBanner'
 
-  /home/promotional_banner/{slug}:
+  /home/promotional_banner/{id}:
     put:
       tags:
         - promotional_banner
@@ -125,9 +125,9 @@ paths:
       description: Cette méthode permet de modifier la bannière promotionnelle.
       parameters:
         - in: path
-          name: slug
+          name: id
           required: true
-          description: Slug de la bannière à modifier
+          description: Id de la bannière à modifier
           schema:
             type: string
             example: default_banner
@@ -166,7 +166,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /home/presentation_video/{slug}:
+  /home/presentation_video/{id}:
     post:
       tags:
         - presentation_video
@@ -175,13 +175,13 @@ paths:
       description: >-
         Cette méthode permet de modifier les propriétés de la section video.
         Elle est utilisée à la place d'une méthode put afin de prendre en charge le média vidéo. 
-        Elle prend un paramètre, le slug, et met à jour l'enregistrement correspondant.
+        Elle prend un paramètre, l'id, et met à jour l'enregistrement correspondant.
         Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
       parameters:
         - in: path
-          name: slug
+          name: id
           required: true
-          description: Slug de la section vidéo à modifier
+          description: Id de la section vidéo à modifier
           schema:
             type: string
             example: default-presentation_video
@@ -219,12 +219,12 @@ paths:
       summary: Récupérer une section vidéo spécifique
       description: >-
         Cette méthode permet de récupérer les propriétés d'une section vidéo spécifique.
-        Elle prend un paramètre, le slug.
+        Elle prend un paramètre, l'id.
       parameters:
         - in: path
-          name: slug
+          name: id
           required: true
-          description: Slug de la section vidéo à récupérer
+          description: Id de la section vidéo à récupérer
           schema:
             type: string
             example: default-presentation_video
@@ -1089,9 +1089,6 @@ components:
         id:
           type: integer
           example: 5
-        slug:
-          format: string
-          example: default-hero
         title:
           $ref: '#/components/schemas/Translatable'
         subtitle:
@@ -1113,9 +1110,6 @@ components:
           example: 0
         text:
           $ref: '#/components/schemas/Translatable'
-        slug:
-          type: string
-          example: default-banner
 
     PresentationVideo:
       description: Modèle contenant les éléments de la section Vidéo
@@ -1125,9 +1119,6 @@ components:
         id:
           type: integer
           example: 4
-        slug:
-          format: string
-          example: default-hero
         title:
           $ref: '#/components/schemas/Translatable'
         description:
