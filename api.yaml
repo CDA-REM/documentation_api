@@ -1096,6 +1096,21 @@ paths:
                 $ref: '#/components/schemas/Rooms'
         '400':
           description: 'La syntaxe de la requête est erronée.'
+    get:
+      tags:
+        - rooms
+      operationId: getRoom
+      summary: Récupérer un index de toutes les chambres
+      description: >-
+        Cette méthode permet de récupérer les informations de toutes les chambres.
+        Elle ne prend pas de paramètre.
+      responses:
+        '200':
+          description: Informations renvoyées avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rooms'
 
   /api/rooms/{room_number}:
     get:
