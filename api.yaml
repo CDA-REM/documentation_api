@@ -1397,10 +1397,10 @@ components:
           example: 3
         checkin:
           type: string
-          format: date-time
+          format: date
         checkout:
           type: string
-          format: date-time
+          format: date
         has_options:
             type: boolean
             example: false
