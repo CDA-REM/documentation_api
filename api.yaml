@@ -736,7 +736,8 @@ paths:
                 $ref: '#/components/schemas/Options'
         '400':
           description: 'La syntaxe de la requête est erronée.'
-
+          
+  /api/reservation/options/{id}:
     put:
       tags:
         - options
