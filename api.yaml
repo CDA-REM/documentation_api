@@ -221,7 +221,7 @@ paths:
     get:
       tags:
         - presentation_video
-      operationId: getVideo
+      operationId: getVideoWithId
       summary: Récupérer une section vidéo spécifique
       description: >-
         Cette méthode permet de récupérer les propriétés d'une section vidéo spécifique.
@@ -750,6 +750,14 @@ paths:
       description: >-
         Cette méthode permet de modifier une option de réservation.
         Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
+      parameter:
+        - in: path
+          name: id
+          required: true
+          description: Id de la réservation à modifier
+          schema:
+            type: integer
+            example: 2
       requestBody:
         required: true
         content:
@@ -1211,7 +1219,7 @@ paths:
   /api/card/create:
     post:
       tags:
-        -cards
+        - cards
       operationId: createCard
       summary: Création d'une carte NFC.
       description : Cette méthode permet la création d'une carte NFC pour déverouiller une porte.
@@ -1685,7 +1693,7 @@ components:
           type: integer
           example: 2
         tracability:
-          
+          $ref: '#/components/schemas/Timestamps'
 
   securitySchemes:
     password:
