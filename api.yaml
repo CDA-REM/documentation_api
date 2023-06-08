@@ -42,6 +42,10 @@ tags:
     description: Informations des utilisateurs
   - name: rooms
     description: Information des chambres
+  - name: cards
+    description: Information sur une carte NFC
+  - name: statistics
+    description: Données d'utilisation des cartes
 
 paths:
   /api/home/hero:
@@ -1195,9 +1199,150 @@ paths:
               schema:
                 $ref: '#/components/schemas/Rooms'
         '400':
-          description: 'La syntaxe de la requête est erronée.'
+          description: Mauvaise syntaxe.
+          content:
+            text/plain: 
+              schema:
+                type: string
+                example: "La syntaxe de la requête est erronnée."
         '404':
           description: 'Ressource non trouvée.'
+
+  /api/card/create:
+    post:
+      tags:
+        -cards
+      operationId: createCard
+      summary: Création d'une carte NFC.
+      description : Cette méthode permet la création d'une carte NFC pour déverouiller une porte.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  format: uuid 
+      responses:
+        '200':
+          description: Carte effectivement créée.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cards'
+  
+  /api/card/read:
+    get:
+      tags:
+        - cards
+      operationId: readCard
+      summary: Lecture d'une carte NFC.
+      description: Cette méthode permet de lire une carte NFC. Elle renvoie la réservation liée s'il y en a une, et une erreur 404 sinon.
+      responses:
+        '200':
+          description : Carte lue avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+          '404':
+            description : La carte n'est pas activée actuellement, elle n'est liée a rien et n'a pas d'id.
+            content:
+              text/plain:
+                schema:
+                  type: string
+                  example: "Carte inactive."
+
+  /api/statistics/create:
+    post:
+      tags:
+        - statistics
+      operationId: readStats
+      summary: Ajout d'un rang de statistiques d'ouverture de la porte.
+      description : Cette méthode permet de créer un rang à la table de statistiques d'une carte.
+      responses:
+        '200':
+          description: Ressource récupérée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Statistics'
+        '404':
+          description: Ressource non trouvée
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "La ressource demandée n'existe pas." 
+  /api/statistics/{card_id}:
+    get:
+      tags:
+        - statistics
+      operationId: readStats
+      summary: Statistiques d'ouverture de la porte.
+      description : Cette méthode permet d'accéder aux statistiques liées à l'utilisation de la carte NFC. Elle nécessite l'id des statistiques qu'on veut récupérer.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Numéro de la carte dont on veut récupérer les statistiques dans la base de données.
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Ressource récupérée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Statistics'
+        '404':
+          description: Ressource non trouvée
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "La ressource demandée n'existe pas."
+    
+    put:
+      tags:
+        - statistics
+      operationId: readStats
+      summary: Mise à jour du champ d'ouverture de la porte.
+      description : Cette méthode permet d'accéder aux statistiques liées à l'utilisation de la carte NFC. Elle nécessite l'id des statistiques qu'on veut récupérer.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Numéro de la carte dont on veut récupérer les statistiques dans la base de données.
+          schema:
+            type: integer
+            example: 2
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                type: string
+                format: date-time
+      responses:
+        '200':
+          description: Ressource récupérée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Statistics'
+        '404':
+          description: Ressource non trouvée
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "La ressource demandée n'existe pas."
 
 components:
   schemas:
@@ -1499,6 +1644,48 @@ components:
         price:
           type: integer
           example: 135
+        lock:
+          type: string
+          example: "xHaaMd7f3"
+    
+    Cards:
+      description : >-
+        Modèle contenant les propriétés d'une carte NFC.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 1
+        key:
+          type: string
+          format: uuid
+          example: ee5d1bc6-5fc7-4709-9a92-06cc05ab0d88
+
+    Timestamps:
+      description: >-
+        Objet qui contient tous les timestamps liés à l'ouverture d'une porte.
+      type: object
+
+      properties:
+        timestamps:
+          type: str
+          example: "2022-04-06 12:42:12, 2022-04-07 18:21:00"
+
+    Statistics:
+      description : >-
+        Modèle contenant les statistiques d'ouvertures d'une porte.
+      type: object
+
+      properties:
+        id:
+          type: integer
+          example: 1
+        card_id:
+          type: integer
+          example: 2
+        tracability:
+          
 
   securitySchemes:
     password:
@@ -1509,4 +1696,5 @@ components:
           scopes:
             write: allows modifying resources
             read: allows reading resources
+    
 
