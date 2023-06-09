@@ -1670,7 +1670,7 @@ components:
           type: integer
           example: 1
 
-    Tracability:
+    Traceability:
       description: >-
         Objet qui contient tous les timestamps liés à l'ouverture d'une porte.
       type: object
