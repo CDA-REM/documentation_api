@@ -1652,9 +1652,6 @@ components:
         price:
           type: integer
           example: 135
-        lock:
-          type: string
-          example: "xHaaMd7f3"
     
     Cards:
       description : >-
@@ -1669,8 +1666,11 @@ components:
           type: string
           format: uuid
           example: ee5d1bc6-5fc7-4709-9a92-06cc05ab0d88
+        room_id:
+          type: integer
+          example: 1
 
-    Timestamps:
+    Tracability:
       description: >-
         Objet qui contient tous les timestamps liés à l'ouverture d'une porte.
       type: object
