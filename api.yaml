@@ -1688,7 +1688,7 @@ components:
           type: integer
           example: 2
         tracability:
-          $ref: '#/components/schemas/Timestamps'
+          $ref: '#/components/schemas/Traceability'
 
   securitySchemes:
     password:
