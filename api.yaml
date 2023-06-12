@@ -12,7 +12,7 @@ info:
     `title[fr]` et `title[en]`.
   contact:
     # Un commentaire
-    name: REM
+    name: Team name
     email: you@your-company.com
 
 tags:
@@ -843,8 +843,8 @@ paths:
     get:
       tags:
         - reservations
-      operationId: updateReservation
-      summary: Modifie le statut d'une réservation.
+      operationId: readReservation
+      summary: Récupère les informations d'une réservation.
       description: >-
         Cette méthode permet de modifier le statut d'une réservation uniquement.
       parameters:
@@ -1106,7 +1106,7 @@ paths:
     get:
       tags:
         - rooms
-      operationId: getRoom
+      operationId: getRooms
       summary: Récupérer un index de toutes les chambres
       description: >-
         Cette méthode permet de récupérer les informations de toutes les chambres.
@@ -1249,19 +1249,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reservations'
-          '404':
-            description : La carte n'est pas activée actuellement, elle n'est liée a rien et n'a pas d'id.
-            content:
-              text/plain:
-                schema:
-                  type: string
-                  example: "Carte inactive."
+        '404':
+          description : La carte n'est pas activée actuellement, elle n'est liée a rien et n'a pas d'id.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Carte inactive."
 
   /api/statistics/create:
     post:
       tags:
         - statistics
-      operationId: readStats
+      operationId: createStats
       summary: Ajout d'un rang de statistiques d'ouverture de la porte.
       description : Cette méthode permet de créer un rang à la table de statistiques d'une carte.
       responses:
@@ -1283,7 +1283,7 @@ paths:
       tags:
         - statistics
       operationId: readStats
-      summary: Statistiques d'ouverture de la porte.
+      summary: Récupère les statistiques d'ouverture de la porte.
       description : Cette méthode permet d'accéder aux statistiques liées à l'utilisation de la carte NFC. Elle nécessite l'id des statistiques qu'on veut récupérer.
       parameters:
         - in: path
@@ -1311,7 +1311,7 @@ paths:
     put:
       tags:
         - statistics
-      operationId: readStats
+      operationId: updateStats
       summary: Mise à jour du champ d'ouverture de la porte.
       description : Cette méthode permet d'accéder aux statistiques liées à l'utilisation de la carte NFC. Elle nécessite l'id des statistiques qu'on veut récupérer.
       parameters:
@@ -1327,10 +1327,11 @@ paths:
         content:
           multipart/form-data:
             schema:
-              type: string
+              type: object
               properties:
-                type: object
-                format: date-time
+                key:
+                  type: string
+                  format: date-time
       responses:
         '200':
           description: Ressource récupérée
@@ -1672,7 +1673,7 @@ components:
 
       properties:
         timestamps:
-          type: str
+          type: string
           example: "2022-04-06 12:42:12, 2022-04-07 18:21:00"
 
     Statistics:
