@@ -12,7 +12,7 @@ info:
     `title[fr]` et `title[en]`.
   contact:
     # Un commentaire
-    name: Team name
+    name: REM
     email: you@your-company.com
 
 tags:
@@ -854,12 +854,6 @@ paths:
           description: Id de la réservation à modifier
           schema:
             type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Reservations'
       responses:
         '200':
           description: 'Réservation modifiée avec succès.'
@@ -1193,7 +1187,7 @@ paths:
         Elle prend le numéro de la chambre en paramètre.
       parameters:
         - in: path
-          name: id
+          name: room_number
           required: true
           description: Numéro de la chambre à supprimer de la base de données.
           schema:
@@ -1239,7 +1233,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cards'
+                $ref: '#/components/schemas/KeyCards'
   
   /api/keycard/read:
     get:
@@ -1293,7 +1287,7 @@ paths:
       description : Cette méthode permet d'accéder aux statistiques liées à l'utilisation de la carte NFC. Elle nécessite l'id des statistiques qu'on veut récupérer.
       parameters:
         - in: path
-          name: id
+          name: key_card_id
           required: true
           description: Numéro de la carte dont on veut récupérer les statistiques dans la base de données.
           schema:
@@ -1322,7 +1316,7 @@ paths:
       description : Cette méthode permet d'accéder aux statistiques liées à l'utilisation de la carte NFC. Elle nécessite l'id des statistiques qu'on veut récupérer.
       parameters:
         - in: path
-          name: id
+          name: key_card_id
           required: true
           description: Numéro de la carte dont on veut récupérer les statistiques dans la base de données.
           schema:
@@ -1333,9 +1327,9 @@ paths:
         content:
           multipart/form-data:
             schema:
-              type: object
+              type: string
               properties:
-                type: string
+                type: object
                 format: date-time
       responses:
         '200':
@@ -1706,4 +1700,3 @@ components:
             write: allows modifying resources
             read: allows reading resources
     
-
