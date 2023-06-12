@@ -709,7 +709,7 @@ paths:
       summary: Récupère toutes les options disponibles à la réservation.
       responses:
         '200':
-          description: Hero affiché
+          description: Options affichées
           content:
             application/json:
               schema:
@@ -1216,7 +1216,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /api/card/create:
+  /api/keycard/create:
     post:
       tags:
         - cards
@@ -1241,7 +1241,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Cards'
   
-  /api/card/read:
+  /api/keycard/read:
     get:
       tags:
         - cards
@@ -1284,7 +1284,7 @@ paths:
               schema:
                 type: string
                 example: "La ressource demandée n'existe pas." 
-  /api/statistics/{card_id}:
+  /api/statistics/{key_card_id}:
     get:
       tags:
         - statistics
@@ -1573,6 +1573,7 @@ components:
             - "terminated"
             - "no-show"
             - "validated"
+            - "in progress"
 
     Options:
       description: Options disponibles à la réservation.
@@ -1653,7 +1654,7 @@ components:
           type: integer
           example: 135
     
-    Cards:
+    KeyCards:
       description : >-
         Modèle contenant les propriétés d'une carte NFC.
       type: object
@@ -1662,7 +1663,7 @@ components:
         id:
           type: integer
           example: 1
-        key:
+        key_code:
           type: string
           format: uuid
           example: ee5d1bc6-5fc7-4709-9a92-06cc05ab0d88
@@ -1689,7 +1690,7 @@ components:
         id:
           type: integer
           example: 1
-        card_id:
+        key_card_id:
           type: integer
           example: 2
         tracability:
