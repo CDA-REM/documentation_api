@@ -750,7 +750,7 @@ paths:
       description: >-
         Cette méthode permet de modifier une option de réservation.
         Attention, le rang doit contenir tous les champs : aucun ne peut être supprimé sans remplacement.
-      parameter:
+      parameters:
         - in: path
           name: id
           required: true
