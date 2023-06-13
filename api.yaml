@@ -1320,8 +1320,8 @@ paths:
       tags:
         - statistics
       operationId: updateStats
-      summary: Mise à jour du champ d'ouverture de la porte.
-      description : Cette méthode permet d'accéder aux statistiques liées à l'utilisation de la carte NFC. Elle nécessite l'id des statistiques qu'on veut récupérer.
+      summary: Met à jour les statistique d'ouverture de la porte.
+      description : Cette méthode permet d'ajouter une date et une heure aux statistiques liées à l'utilisation de la carte NFC.
       parameters:
         - in: path
           name: key_card_id
