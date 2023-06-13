@@ -1673,6 +1673,9 @@ components:
         room_id:
           type: integer
           example: 1
+        reservation_id:
+          type: integer
+          example: 12
 
     Traceability:
       description: >-
