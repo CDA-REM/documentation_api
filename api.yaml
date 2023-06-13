@@ -851,7 +851,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: Id de la réservation à modifier
+          description: Id de la réservation dont on veut récupérer les informations.
           schema:
             type: integer
       responses:
@@ -872,7 +872,7 @@ paths:
         - in: path
           name: id
           required: true
-          description: Id de la réservation à modifier
+          description: Id de la réservation à modifier.
           schema:
             type: integer
       requestBody:
@@ -912,7 +912,7 @@ paths:
         - in: path
           name: user_id
           required: true
-          description: Id du User dont on veut l'historique
+          description: Id du User dont on veut consulter l'historique.
           schema:
             type: integer
       responses:
@@ -1210,7 +1210,7 @@ paths:
         '404':
           description: 'Ressource non trouvée.'
 
-  /api/keycard/create:
+  /api/keycard:
     post:
       tags:
         - cards
@@ -1235,13 +1235,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/KeyCards'
   
-  /api/keycard/read:
+  /api/keycard/{id}:
     get:
       tags:
         - cards
       operationId: readCard
       summary: Lecture d'une carte NFC.
       description: Cette méthode permet de lire une carte NFC. Elle renvoie la réservation liée s'il y en a une, et une erreur 404 sinon.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Numéro de la carte dont on veut récupérer les informations de réservation dans la base de données.
+          schema:
+            type: integer
+            example: 2
       responses:
         '200':
           description : Carte lue avec succès.
@@ -1257,7 +1265,7 @@ paths:
                 type: string
                 example: "Carte inactive."
 
-  /api/statistics/create:
+  /api/statistics:
     post:
       tags:
         - statistics
@@ -1700,4 +1708,3 @@ components:
           scopes:
             write: allows modifying resources
             read: allows reading resources
-    
