@@ -838,6 +838,20 @@ paths:
                 $ref: '#/components/schemas/Reservations'
         '400':
           description: 'La syntaxe de la requête est erronée.'
+    get:
+      tags:
+        - reservations
+      operationId: getAllReservations
+      summary: Récupère les informations de toutes les réservations
+      description: >-
+        Cette route permet de récupérer les informations de toutes les réservations
+      responses:
+        '200':
+          description: 'Réservations récupérées avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
 
   /api/reservations/{id}:
     get:
@@ -846,7 +860,7 @@ paths:
       operationId: readReservation
       summary: Récupère les informations d'une réservation.
       description: >-
-        Cette méthode permet de modifier le statut d'une réservation uniquement.
+        Cette méthode permet de récupérer les informations d'une réservations.
       parameters:
         - in: path
           name: id
@@ -856,7 +870,7 @@ paths:
             type: integer
       responses:
         '200':
-          description: 'Réservation modifiée avec succès.'
+          description: 'Réservation récupérée avec succès.'
           content:
             application/json:
               schema:
@@ -865,9 +879,9 @@ paths:
       tags:
         - reservations
       operationId: updateReservation
-      summary: Modifie le statut d'une réservation.
+      summary: Modifier le statut d'une réservation, la date de checkin et la date de checkout.
       description: >-
-        Cette méthode permet de modifier le statut d'une réservation uniquement.
+        Cette méthode permet de modifier le statut d'une réservation la date de checkin et la date de checkout.
       parameters:
         - in: path
           name: id
@@ -889,6 +903,7 @@ paths:
                     - "terminated"
                     - "no-show"
                     - "validated"
+                    - "in-progress"
       responses:
         '200':
           description: 'Réservation modifiée avec succès.'
