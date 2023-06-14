@@ -1552,15 +1552,18 @@ components:
         number_of_people:
           type: integer
           example: 3
+        started_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
         checkin:
           type: string
           format: date
         checkout:
           type: string
           format: date
-        has_options:
-            type: boolean
-            example: false
         price:
             type: number
             format: float
