@@ -1279,7 +1279,32 @@ paths:
               schema:
                 type: string
                 example: "Carte inactive."
-
+                
+  /api/keycard/room:
+    post:
+      tags:
+        - cards
+      operationId: openRoom
+      summary: Simulation de l'ouverture d'une porte de chambre
+      description : Cette méthode permet d'utiliser une carte NFC pour déverouiller une porte.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  format: uuid 
+      responses:
+        '200':
+          description: Vous pouvez accéder à la chambre.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenRoom'
+                
   /api/statistics:
     post:
       tags:
@@ -1694,6 +1719,20 @@ components:
         reservation_id:
           type: integer
           example: 12
+          
+          
+    OpenRoom:
+      description: >-
+        Objet contenant les informations nécessaires pour ouvrir une porte de chambre
+      type: object
+      
+      properties:
+        room_id:
+          type: integer
+          example: 1
+        key_card_id:
+          type: integer
+          example: 1
 
     Traceability:
       description: >-
