@@ -914,7 +914,56 @@ paths:
         '400':
           description: 'La syntaxe de la requête est erronée.'
 
-
+  /api/reservations/checkin/{reservation}:
+    put:
+      tags:
+        - reservations
+      operationId: updateReservationWithCheckin
+      summary: Modifier le statut d'une réservation et la date de checkin.
+      description: >-
+        Cette méthode permet de modifier le statut d'une réservation et la date de checkin.
+      parameters:
+        - in: path
+          name: reservation
+          required: true
+          description: Id de la réservation à modifier.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Check-in enregistré avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+  
+  /api/reservations/checkout/{reservation}:
+    put:
+      tags:
+        - reservations
+      operationId: updateReservationWithCheckout
+      summary: Modifier le statut d'une réservation et la date de checkout.
+      description: >-
+        Cette méthode permet de modifier le statut d'une réservation et la date de checkout.
+      parameters:
+        - in: path
+          name: reservation
+          required: true
+          description: Id de la réservation à modifier.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Check-in enregistré avec succès.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservations'
+        '400':
+          description: 'La syntaxe de la requête est erronée.'
+  
   /api/reservations/user/{user_id}:
     get:
       tags:
@@ -941,7 +990,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: "La ressource n'existe pas."
-
+  
   /api/users:
     post:
       tags:
@@ -969,7 +1018,7 @@ paths:
                 $ref: '#/components/schemas/Users'
         '400':
           description: 'La syntaxe de la requête est erronée.'
-
+  
   /api/users/{id}:
     get:
       tags:
@@ -993,7 +1042,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
-
+  
     put:
       tags:
         - users
@@ -1028,7 +1077,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: 'Ressource non trouvée.'
-
+  
     delete:
       tags:
         - users
@@ -1056,7 +1105,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: 'Ressource non trouvée.'
-
+  
   /api/login:
     post:
       tags:
@@ -1091,7 +1140,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '401':
           description: 'Accès refusé vérifier les identifiants utilisés.'
-
+  
   /api/rooms:
     post:
       tags:
@@ -1133,7 +1182,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Rooms'
-
+  
   /api/rooms/{room_number}:
     get:
       tags:
@@ -1157,7 +1206,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Rooms'
-
+  
     put:
       tags:
         - rooms
@@ -1191,7 +1240,7 @@ paths:
           description: 'La syntaxe de la requête est erronée.'
         '404':
           description: 'Ressource non trouvée.'
-
+  
     delete:
       tags:
         - rooms
@@ -1224,7 +1273,7 @@ paths:
                 example: "La syntaxe de la requête est erronnée."
         '404':
           description: 'Ressource non trouvée.'
-
+  
   /api/keycard:
     post:
       tags:
@@ -1680,11 +1729,76 @@ components:
         room_id:
           type: integer
           example: 1
-        reservation_id:
-          type: integer
-          example: 12
+        reservation:
+          type: object
           
-          
+          properties:
+            id:
+              type: integer
+              example: 1
+            user_id:
+              type: integer
+              example: 1
+            number_of_people:
+              type: integer
+              example: 3
+            started_date:
+              type: string
+              format: date
+            end_date:
+              type: string
+              format: date
+            checkin:
+              type: string
+              format: date
+            checkout:
+              type: string
+              format: date
+            price:
+                type: number
+                format: float
+            stay_type:
+              type: string
+              enum:
+                - "pro"
+                - "personal"
+            status:
+              type: string
+              enum:
+                - "cancelled"
+                - "terminated"
+                - "no-show"
+                - "validated"
+                - "in progress"
+            rooms:
+              type: object
+              
+              properties:
+                id:
+                  type: integer
+                  example: 10
+                room_number:
+                  type: integer
+                  example: 105
+                style:
+                  type: string
+                  example: standard
+                price:
+                  type: integer
+                  example: 135
+            options:
+              type: object
+              
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                option_name:
+                  $ref: '#/components/schemas/Translatable'
+                option_price:
+                  type: number
+                  example: 30.5
+              
     OpenRoom:
       description: >-
         Objet contenant les informations nécessaires pour ouvrir une porte de chambre
