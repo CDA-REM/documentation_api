@@ -777,43 +777,42 @@ paths:
           description: 'Ressource non trouvée.'
 
 
-#  /api/reservations/availability:
-#    get:
-#      tags:
-#        - reservations
-#      operationId: checkAvailability
-#      summary : Vérifie la disponibilité d'une réservation
-#      description : Vérifie la disponibilité d'une réservation en fonction des dates et des nombres de chambres demandée.
-#      requestBody:
-#        required: true
-#        content:
-#          application/json:
-#            schema:
-#              properties:
-#                check-in:
-#                  required: true
-#                  type: string
-#                  format: date
-#                  example: "2022-12-06"
-#                check-out:
-#                  properties:
-#                    type: string
-#                    format: date
-#                    example: "2022-12-06"
-#                number_of_rooms:
-#                  type: integer
-#                  example: 2
-#      responses:
-#        '200':
-#          description: 'Requête passée avec succès'
-#          content:
-#            application/json:
-#              schema:
-#                properties:
-#                  availability:
-#                    type: boolean
-#        '400':
-#            description: 'Manque de paramètres'
+  /api/reservations/availability/{started_date}/{end_date}:
+    get:
+      tags:
+        - reservations
+      operationId: checkAvailability
+      summary : Vérifie la disponibilité d'une réservation
+      description : >-
+        Vérifie la disponibilité d'une réservation en fonction des date.
+      parameters:
+        - in: path
+          name: started_date
+          required: true
+          description: Date de début souhaitée pour la réservation.
+          schema:
+            type: string
+            format: date
+            example: "2022-12-06"
+        - in: path
+          name: end_date
+          required: true
+          description: Date de début souhaitée pour la réservation.
+          schema:
+            type: string
+            format: date
+            example: "2022-12-16"
+      responses:
+        '200':
+          description: 'Requête passée avec succès'
+          content:
+            application/json:
+              schema:
+                properties:
+                  availability:
+                    type: boolean
+        '400':
+            description: 'Des pararamètres sont manquants'
 
   /api/reservations:
     post:
